@@ -5,7 +5,7 @@
         <title>Flight Delays</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
         <style>
-            #map { width: 720px; height: 360px; }
+            #map { width: 1000px; height: 720px; }
         </style>
     </head>
     <body>
@@ -22,24 +22,26 @@ let heatmapLayer = new HeatmapOverlay({
 })
 
 let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-    id: 'mapbox.world-bright',
-    maxZoom: 11,
+    id: 'mapbox.world-dark',
+    maxZoom: 20,
     attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'
 })
 
 let map = new L.map('map', {
-    center: new L.LatLng(37.8, -96), 
+    center: new L.LatLng(37.8, -96),
     zoom: 4,
     layers: [baseLayer, heatmapLayer]
 })
 
-d3.csv('../data/airports-delay.csv', (data) =>
-    heatmapLayer.setData({
-        data: data,
-        max: d3.max(data, (row) => row.DepDelay)
-    })
+d3.csv('../data/airports-delay.csv', (data) => {
+             heatmapLayer.setData({
+                 data: data,
+                 max: d3.max(data, (row) => row.DepDelay)
+             });
+             data.filter((row) => row.DepDelay > 20000)
+                 .map( (row) => L.marker([row.Lat, row.Lng]).addTo(map).bindPopup(row.Origin) );
+         }
 )
-
         </script>
     </body>
 </html>
