@@ -12,10 +12,19 @@ function green2red(percentage) {
   return '#' + ('000000' + h.toString(16)).slice(-6);
 }
 
-function getMax(arr, prop) {
+function getMaxDelay(arr, prop) {
     var max;
     for (var i=0 ; i<arr.length ; i++) {
         if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
+            max = arr[i];
+    }
+    return max;
+}
+
+function getMaxEarly(arr, prop) {
+    var max;
+    for (var i=0 ; i<arr.length ; i++) {
+        if (!max || -1*parseInt(arr[i][prop]) > -1* parseInt(max[prop]))
             max = arr[i];
     }
     return max;
@@ -60,20 +69,20 @@ var cities ={
 var sankey = d3.sankey()
     .nodeWidth(15)
     .nodePadding(10)
-.nodeAlign(d3.sankeyCenter)
+    .nodeAlign(d3.sankeyCenter)
     .extent([[1, 1], [width - 1, height - 6]]);
 
 var link = svg.append("g")
     .attr("class", "links")
     .attr("fill", "none")
-.attr("stroke-opacity", 0.2)
-  .selectAll("path");
+    .attr("stroke-opacity", 0.3)
+    .selectAll("path");
 
 var node = svg.append("g")
     .attr("class", "nodes")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10)
-  .selectAll("g");
+    .selectAll("g");
 
 sankey(cities);
 
@@ -82,8 +91,17 @@ link = link
     .enter().append("path")
       .attr("d", d3.sankeyLinkHorizontal())
       .attr("stroke", function(d) { // if changed to red, Changes fill of all the nodes to red.
-        var maxDelay = getMax(cities.links, "value").value;
-        percentage = 100*(1 - d.value/maxDelay)
+        var maxDelay = getMaxDelay(cities.links, "value").value;
+        var maxEarly = getMaxEarly(cities.links, "value").value;
+        console.log(maxDelay)
+        console.log(maxEarly)
+        if (d.value > 0){
+          percentage = 100 - (50+(50*(d.value/maxDelay)))
+        }
+        else{
+          percentage = 100 - (50*(d.value/maxEarly))
+        }
+
         return green2red(percentage)
         })
       .attr("stroke-width", function(d) { return Math.max(1, d.width); });
@@ -110,6 +128,6 @@ node.append("text")
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
       .text(function(d) { return d.name; })
-    .filter(function(d) { return d.x0 < width / 2; })
+      .filter(function(d) { return d.x0 < width / 2; })
       .attr("x", function(d) { return d.x1 + 6; })
       .attr("text-anchor", "start");
