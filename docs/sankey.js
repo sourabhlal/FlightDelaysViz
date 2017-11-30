@@ -35,7 +35,7 @@ var svg = d3.select("svg").attr("style", "outline: thin solid grey;"),
     height = +svg.attr("height");
 
 var formatNumber = d3.format(",.0f"),
-    format = function(d) { return formatNumber(d) + " TWh"; },
+    format = function(d) { return formatNumber(d) + " mins"; },
     color = d3.scaleOrdinal(d3.schemeCategory10);
 //
 // var x = null;
@@ -86,6 +86,8 @@ var node = svg.append("g")
 
 sankey(cities);
 
+acceptable_mins = 15;
+
 link = link
     .data(cities.links)
     .enter().append("path")
@@ -95,11 +97,11 @@ link = link
         var maxEarly = getMaxEarly(cities.links, "value").value;
         console.log(maxDelay)
         console.log(maxEarly)
-        if (d.value > 0){
-          percentage = 100 - (50+(50*(d.value/maxDelay)))
+        if (d.value > acceptable_mins){
+          percentage = 100 - (50+(50*((d.value-acceptable_mins)/(maxDelay-acceptable_mins))))
         }
         else{
-          percentage = 100 - (50*(d.value/maxEarly))
+          percentage = 100 - (50*(1-((-1*(d.value-acceptable_mins)/(acceptable_mins+(-1*maxEarly))))))
         }
 
         return green2red(percentage)
