@@ -49,7 +49,7 @@ let icons = delayCategories.map((del, del_id) =>
     )
 )
 
-d3.csv('data/airports-delay.csv', (data) => {
+d3.csv('airports-delay.csv', (data) => {
     data.forEach((airport) => {
         L.marker([airport.Lat, airport.Lng], {
             icon: airportIcon(airport),
