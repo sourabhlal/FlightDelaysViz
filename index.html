@@ -5,7 +5,7 @@
         <title>Flight Delays</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
         <style>
-            #map { width: 1000px; height: 720px; }
+            #map { width: 1100px; height: 550px; }
         </style>
     </head>
     <body>
@@ -13,14 +13,7 @@
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-        <script src="https://unpkg.com/heatmapjs@2.0.2/heatmap.min.js"></script>
-        <script src="https://unpkg.com/leaflet-heatmap@1.0.0/leaflet-heatmap.js"></script>
         <script>
-let heatmapLayer = new HeatmapOverlay({
-    radius: .75, maxOpacity: 0.8, scaleRadius: true, useLocalExtrema: false,
-    latField: 'Lat', lngField: 'Lng', valueField: 'DepDelay'
-})
-
 let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
     id: 'mapbox.world-dark',
     maxZoom: 20,
@@ -30,18 +23,54 @@ let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.
 let map = new L.map('map', {
     center: new L.LatLng(37.8, -96),
     zoom: 4,
-    layers: [baseLayer, heatmapLayer]
+    layers: [baseLayer]
 })
 
-d3.csv('data/airports-delay.csv', (data) => {
-             heatmapLayer.setData({
-                 data: data,
-                 max: d3.max(data, (row) => row.DepDelay)
-             });
-             data.filter((row) => row.DepDelay > 20000)
-                 .map( (row) => L.marker([row.Lat, row.Lng]).addTo(map).bindPopup(row.Origin) );
-         }
+let shadowUrl = 'https://unpkg.com/leaflet@1.2.0/dist/images/marker-shadow.png';
+let delayCategories = ['none', 'low', 'medium', 'high', 'extreme']
+let trafficScales = [0.2, 0.4, 0.6, 0.8, 1]
+let trafficLimits = [50, 100, 200, 5000]
+let delayLimits = [15, 30, 45, 60]
+let deficon = new L.Icon.Default()
+let scale = (s, arr) => arr.map((x) => s * x)
+
+let icons = delayCategories.map((del, del_id) =>
+    trafficScales.map((traf, traf_id) =>
+        L.icon({
+            iconUrl: 'marker-' + del + '.svg',
+            shadowUrl: shadowUrl,
+
+            iconSize: scale(traf, deficon.options.iconSize),
+            shadowSize: scale(traf, deficon.options.shadowSize),
+            iconAnchor: scale(traf, deficon.options.iconAnchor),
+            //shadowAnchor: scale(traf, deficon.options.shadowAnchor),
+            popupAnchor: scale(traf, deficon.options.popupAnchor),
+        })
+    )
 )
+
+d3.csv('data/airports-delay.csv', (data) => {
+    data.forEach((airport) => {
+        L.marker([airport.Lat, airport.Lng], {
+            icon: airportIcon(airport),
+            title: airport.Origin,
+        }).addTo(map)
+    })
+})
+
+function airportIcon(airport) {
+    let traffic = 0
+    for (traffic = 0; traffic < trafficLimits.length; traffic++)
+        if (airport.Flights < trafficLimits[traffic])
+            break
+
+    let delay = 0
+    for (delay = 0; delay < delayLimits.length; delay++)
+        if (airport.DepDelay < delayLimits[delay])
+            break
+
+    return icons[delay][traffic]
+}
         </script>
         <a href="sankey.html">See airport visual</a>
     </body>
