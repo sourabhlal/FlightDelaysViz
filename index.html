@@ -5,11 +5,51 @@
         <title>Flight Delays</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
         <style>
-            #map { width: 1100px; height: 550px; }
+            body {
+                width: 1100px;
+                margin: 0;
+                font-family: sans-serif;
+            }
+            #container { width: 1100px; height: 550px; overflow: hidden; }
+            #map {
+                width: 1100px;
+                height: 550px;
+                position: relative;
+                left: 0px;
+                transition: left 2s;
+            }
+            #map.hidden { left: -1100px; }
+            #graphs {
+                width: 1100px;
+                height: 550px;
+                padding: 1em;
+                background-color: #424242;
+                color: #cecece;
+                position: relative;
+                left: 0px; top: -550px;
+                transition: left 2s;
+            }
+            #graphs.hidden { left: 1100px; }
+            #graphs h2 { padding-left: 3.14169em; margin: 0; }
+
+            .btn-back, .btn-back:visited, .btn-back:active, .btn-back:hover {
+                color: #cecece;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 24px;
+                float: left;
+            }
         </style>
     </head>
     <body>
-        <div id="map"></div>
+        <div id="container">
+            <div id="map"></div>
+            <div id="graphs" class="hidden">
+                <a href="#" onclick="toggleViews()" class="btn-back">&lt;</a>
+                <h2 id="airport-name"></h2>
+            </div>
+        </div>
+        <div id="controls"></div>
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
@@ -51,10 +91,17 @@ let icons = delayCategories.map((del, del_id) =>
 
 d3.csv('airports-delay.csv', (data) => {
     data.forEach((airport) => {
-        L.marker([airport.Lat, airport.Lng], {
+        let m = L.marker([airport.Lat, airport.Lng], {
             icon: airportIcon(airport),
             title: airport.Origin,
         }).addTo(map)
+
+        m.on('click', (event) => {
+            document.getElementById('airport-name').textContent =
+                'Welcome to ' + airport.Origin
+
+            toggleViews()
+        })
     })
 })
 
@@ -70,6 +117,11 @@ function airportIcon(airport) {
             break
 
     return icons[delay][traffic]
+}
+
+function toggleViews() {
+    document.getElementById('map').classList.toggle('hidden')
+    document.getElementById('graphs').classList.toggle('hidden')
 }
         </script>
         <a href="sankey.html">See airport visual</a>
