@@ -157,7 +157,7 @@ let gCauses = svgCauses.append('g').attr('transform', 'translate(' + marginCause
 
 let xCauses = d3.scaleBand()
     .rangeRound([0, widthCauses])
-    .paddingInner(0.05)
+    .padding(0.05)
     .align(0.1)
 
 let yCauses = d3.scaleLinear()
@@ -185,7 +185,10 @@ function redrawDelayCauses() {
     let keys = globalData.columns.slice(2)
 
     //data.sort((a, b) => a.Total - b.Total)
-    xCauses.domain(data.map((d) => d.DayofMonth))
+    xDomain = []
+    for (let i = 1; i <= 31; i++)
+        xDomain.push(i)
+    xCauses.domain(xDomain)
     yCauses.domain([0, d3.max(data, (d) => d.Total)]).nice()
     zCauses.domain(keys)
 
