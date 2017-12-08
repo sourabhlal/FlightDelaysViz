@@ -263,6 +263,13 @@ function redrawDelayCauses() {
         .attr('dy', '0.32em')
         .text((d) => d)
 }
+
+         let min_date = new Date(1999, 1, 1);
+         let max_date = new Date(2017, 8, 1);
+         const timesliderDiv = document.getElementById("timeslider");
+
+         const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
+         timeslider.draw();
         </script>
     </body>
 </html>
