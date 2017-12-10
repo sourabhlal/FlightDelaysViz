@@ -3,6 +3,11 @@ class TimeSlider {
         this.containerDiv = options.containerDiv;
         this.startDate = options.startDate;
         this.endDate = options.endDate;
+        this.selectedStartDate = this.startDate;
+        this.selectedEndDate = this.endDate;
+
+        this.timeEventEmitter = new EventEmitter();
+        this.timeEventEmitter.defineEvents(['timeChange']);
     }
 
     draw() {
@@ -68,8 +73,12 @@ class TimeSlider {
     onBrush(chart) {
         return () => {
             const that = chart;
-            var b = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);
-            console.log("From: " + b[0] + " to: " + b[1]);
+            const b = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);
+
+            that.selectedStartDate = b[0];
+            that.selectedEndDate = b[1];
+
+            that.timeEventEmitter.emit("timeChange");
         };
     }
 }
