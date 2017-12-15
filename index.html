@@ -148,121 +148,136 @@ function toggleViews() {
     redrawDelayCauses()
 }
 
-let svgCauses = d3.select('svg#delay-causes')
-let svgCausesBounds = svgCauses.node().getBoundingClientRect()
-let marginCauses = { top: 20, right: 20, bottom: 30, left: 40 }
-let widthCauses = svgCausesBounds.width - marginCauses.left - marginCauses.right
-let heightCauses = svgCausesBounds.height - marginCauses.top - marginCauses.bottom
-let gCauses = svgCauses.append('g').attr('transform', 'translate(' + marginCauses.left + ',' + marginCauses.top + ')')
+redrawDelayCauses = (() => {
+    let svg = d3.select('svg#delay-causes')
+    let bounds = svg.node().getBoundingClientRect()
+    let innerMargin = 10
+    let margin = { top: 20, right: 10, bottom: 30, left: 75 }
+    let width = bounds.width - margin.left - margin.right
+    let height = bounds.height - margin.top - margin.bottom
+    let g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-let xCauses = d3.scaleBand()
-    .rangeRound([0, widthCauses])
-    .padding(0.05)
-    .align(0.1)
 
-let yCauses = d3.scaleLinear()
-    .rangeRound([heightCauses, 0])
-
-let zCauses = d3.scaleOrdinal()
-    .range(["#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
-
-d3.csv('delay-causes_2017_01.csv', (d, i, columns) => {
-    for (i = 2, t = 0; i < columns.length; ++i)
-        t += d[columns[i]] =+ d[columns[i]]
-
-    d.DayofMonth =+ d.DayofMonth
-    d.Total = t
-    return d
-}, (error, data) => {
-    if (error) throw error
-
-    globalData = data
-    redrawDelayCauses()
-})
-
-function redrawDelayCauses() {
-    let data = globalData.filter((r) => r.Origin == currentAirport)
-    let keys = globalData.columns.slice(2)
-
-    //data.sort((a, b) => a.Total - b.Total)
     xDomain = []
     for (let i = 1; i <= 31; i++)
         xDomain.push(i)
-    xCauses.domain(xDomain)
-    yCauses.domain([0, d3.max(data, (d) => d.Total)]).nice()
-    zCauses.domain(keys)
+    let x = d3.scaleBand()
+        .domain(xDomain)
+        .rangeRound([0, width])
+        .padding(0.05)
+        .align(0.1)
 
-    gCauses.selectAll('g').remove()
+    let y = d3.scaleBand()
+        .paddingOuter(0.01)
+        .paddingInner(0.05)
+        .align(0.1)
 
-    gCauses.append('g')
-        .selectAll('g')
-        .data(d3.stack().keys(keys)(data))
-        .enter().append('g')
-            .attr('fill', (d) => zCauses(d.key))
-        .selectAll('rect')
-        .data((d) => d)
-        .enter().append('rect')
-            .attr('x', (d) => xCauses(d.data.DayofMonth))
-            .attr('y', (d) => yCauses(d[1]))
-            .attr('height', (d) => yCauses(d[0]) - yCauses(d[1]))
-            .attr('width', xCauses.bandwidth())
+    let z = d3.interpolateMagma
 
-    xAxis = gCauses.append('g')
-        .attr('class', 'axis')
-        .attr('transform', 'translate(0,' + heightCauses + ')')
-        .call(d3.axisBottom(xCauses))
+    let yBar = d3.scaleLinear()
 
-    xAxis.selectAll('text').attr('fill', '#cecece')
-    xAxis.selectAll('line').attr('stroke', '#cecece')
-    xAxis.selectAll('path').attr('stroke', '#cecece')
+    d3.csv('delay-causes_2017_01.csv', (d, i, columns) => {
+        for (i = 2, t = 0; i < columns.length; ++i)
+            t += d[columns[i]] =+ d[columns[i]]
 
-    xAxis.append('text')
-        .attr('y', 25)
-        .attr('x', xCauses(15))
-        .attr('dy', '0.32em')
-        .attr('fill', '#cecece')
-        .attr('font-weight', 'bold')
-        .attr('text-anchor', 'start')
-        .text('Day of Month')
+        d.DayofMonth =+ d.DayofMonth
+        d.Total = t
+        return d
+    }, (error, data) => {
+        if (error) throw error
 
-    yAxis = gCauses.append('g')
-        .attr('class', 'axis')
-        .call(d3.axisLeft(yCauses).ticks(null, 's'))
+        globalData = data
+        redrawDelayCauses()
+    })
 
-    yAxis.selectAll('text').attr('fill', '#cecece')
-    yAxis.selectAll('line').attr('stroke', '#cecece')
-    yAxis.selectAll('path').attr('stroke', '#cecece')
+    return () => {
+        let data = globalData.filter((r) => r.Origin == currentAirport)
+        let keys = globalData.columns.slice(2).map((k) => k.substring(0, k.length - 5)).reverse()
 
-    yAxis.append('text')
-        .attr('x', 2)
-        .attr('y', yCauses(yCauses.ticks().pop()) + 0.5)
-        .attr('dy', '0.32em')
-        .attr('fill', '#cecece')
-        .attr('font-weight', 'bold')
-        .attr('text-anchor', 'start')
-        .text('Delay (min)')
+        let h = height - 1.11 * keys.length * x.bandwidth() - innerMargin
 
-    let legend = gCauses.append('g')
-        .attr('font-size', 10)
-        .attr('text-anchor', 'end')
-        .attr('fill', '#cecece')
-        .selectAll('g')
-        .data(keys.slice().reverse())
-        .enter().append('g')
-            .attr('transform', (d, i) => 'translate(0,' + i * 20 + ')')
+        y.domain(keys)
+         .rangeRound([h + innerMargin, height])
 
-    legend.append('rect')
-        .attr('x', widthCauses - 19)
-        .attr('width', 19)
-        .attr('height', 19)
-        .attr('fill', zCauses)
+        yBar.domain([0, d3.max(data, (d) => d.Total)])
+            .rangeRound([h, 0])
+            .nice()
 
-    legend.append('text')
-        .attr('x', widthCauses - 24)
-        .attr('y', 9.5)
-        .attr('dy', '0.32em')
-        .text((d) => d)
-}
+        formattedData = []
+        data.forEach((day) =>
+            keys.forEach((key) =>
+                formattedData.push({
+                    key: key,
+                    dom: day.DayofMonth,
+                    val: day[key + 'Delay'] / day.Total,
+                }) ) )
+
+        g.selectAll('g').remove()
+        g.append('g')
+            .selectAll('rect')
+            .data(formattedData)
+            .enter().append('rect')
+                .attr('x', (d) => x(d.dom))
+                .attr('y', (d) => y(d.key))
+                .attr('fill', (d) => z(d.val))
+                .attr('height', y.bandwidth())
+                .attr('width', x.bandwidth())
+
+        let barWidth = Math.floor(x.bandwidth() * 0.2)
+        g.append('g')
+            .selectAll('rect')
+            .data(data)
+            .enter().append('rect')
+                .attr('x', (d) => x(d.DayofMonth) + (x.bandwidth() - barWidth) / 2.0)
+                .attr('y', (d) => yBar(d.Total))
+                .attr('fill', '#cecece')
+                .attr('width', barWidth)
+                .attr('height', (d) => h - yBar(d.Total))
+
+        let xAxis = g.append('g')
+            .attr('class', 'axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x))
+
+        xAxis.selectAll('text').attr('fill', '#cecece')
+        xAxis.selectAll('line').attr('stroke', '#cecece')
+        xAxis.selectAll('path').attr('stroke', '#cecece')
+
+        xAxis.append('text')
+            .attr('y', 25)
+            .attr('x', x(15))
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Day of Month')
+
+        let yAxis = g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(y))
+
+        yAxis.selectAll('text').attr('fill', '#cecece')
+        yAxis.selectAll('line').attr('stroke', '#cecece')
+        yAxis.selectAll('path').attr('stroke', '#cecece')
+
+        let yBarAxis = g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(yBar).ticks(null, 's'))
+
+        yBarAxis.selectAll('text').attr('fill', '#cecece')
+        yBarAxis.selectAll('line').attr('stroke', '#cecece')
+        yBarAxis.selectAll('path').attr('stroke', '#cecece')
+
+        yBarAxis.append('text')
+            .attr('x', 2)
+            .attr('y', yBar(yBar.ticks().pop()) + 0.5)
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Delay (min)')
+    }
+})()
 
          let min_date = new Date(1999, 1, 1);
          let max_date = new Date(2017, 8, 1);
