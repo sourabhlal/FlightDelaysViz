@@ -70,9 +70,9 @@ class TimeSlider {
         // Could do snaping with https://gist.github.com/mbostock/6232620
     }
 
-    onBrush(chart) {
-        return () => {
-            const that = chart;
+    onBrush(timeslider) {
+        return function() {
+            const that = timeslider;
             const b = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);
 
             that.selectedStartDate = b[0];
