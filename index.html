@@ -152,7 +152,7 @@ redrawDelayCauses = (() => {
     let svg = d3.select('svg#delay-causes')
     let bounds = svg.node().getBoundingClientRect()
     let innerMargin = 10
-    let margin = { top: 20, right: 75, bottom: 30, left: 10 }
+    let margin = { top: 20, right: 10, bottom: 30, left: 75 }
     let width = bounds.width - margin.left - margin.right
     let height = bounds.height - margin.top - margin.bottom
     let g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
@@ -165,7 +165,7 @@ redrawDelayCauses = (() => {
         .domain(xDomain)
         .rangeRound([0, width])
         .padding(0.05)
-        .align(0.9)
+        .align(0.1)
 
     let y = d3.scaleBand()
         .paddingOuter(0.01)
@@ -254,8 +254,7 @@ redrawDelayCauses = (() => {
 
         let yAxis = g.append('g')
             .attr('class', 'axis')
-            .attr('transform', 'translate(' + width + ',0)')
-            .call(d3.axisRight(y))
+            .call(d3.axisLeft(y))
 
         yAxis.selectAll('text').attr('fill', '#cecece')
         yAxis.selectAll('line').attr('stroke', '#cecece')
@@ -263,20 +262,19 @@ redrawDelayCauses = (() => {
 
         let yBarAxis = g.append('g')
             .attr('class', 'axis')
-            .attr('transform', 'translate(' + width + ',0)')
-            .call(d3.axisRight(yBar).ticks(null, 's'))
+            .call(d3.axisLeft(yBar).ticks(null, 's'))
 
         yBarAxis.selectAll('text').attr('fill', '#cecece')
         yBarAxis.selectAll('line').attr('stroke', '#cecece')
         yBarAxis.selectAll('path').attr('stroke', '#cecece')
 
         yBarAxis.append('text')
-            .attr('x', -2)
+            .attr('x', 2)
             .attr('y', yBar(yBar.ticks().pop()) + 0.5)
             .attr('dy', '0.32em')
             .attr('fill', '#cecece')
             .attr('font-weight', 'bold')
-            .attr('text-anchor', 'end')
+            .attr('text-anchor', 'start')
             .text('Delay (min)')
     }
 })()
