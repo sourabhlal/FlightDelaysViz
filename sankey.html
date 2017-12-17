@@ -6,6 +6,7 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="sankey.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <style>
       body,html {
           width: 100%;
@@ -26,6 +27,19 @@
 
 <body>
     <div id="timeslider"></div>
+    <br>
+    <form>
+      <div class="form-row">
+        <div class="col-4">
+          <input type="text" class="form-control" name="search" id="city" value="" placeholder="Search for a connection">
+        </div>
+        <div class="col-2">
+          <button id="search" class="btn btn-primary" type="button">Search</button> 
+          <button id="clear" class="btn btn-primary" type="button">Clear</button> 
+        </div>
+      </div>
+    </form>  
+    
     <div id="sankey"><svg width=2100 height=1000 id="chart"></svg></div>
 
     <!--SCRIPTS-->

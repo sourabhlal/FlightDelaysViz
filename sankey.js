@@ -2,11 +2,13 @@ function green2red(percentage) {
   var r, g, b = 0;
   if(percentage < 50) {
     r = 255;
-    g = Math.round(5.1 * percentage);
+    g = Math.round(3.5 * percentage);
+    b = Math.round(3.5 * percentage);
   }
   else {
     g = 255;
     r = Math.round(510 - 5.10 * percentage);
+    b = Math.round(510 - 5.10 * percentage);
   }
   var h = r * 0x10000 + g * 0x100 + b * 0x1;
   return '#' + ('000000' + h.toString(16)).slice(-6);
@@ -107,7 +109,7 @@ var path = sankey.link();
     .links(graph.links)
     .layout(32);
 
-acceptable_mins = 15;
+acceptable_mins = 30;
 
 
 // add in the links
@@ -122,16 +124,17 @@ acceptable_mins = 15;
       .attr("stroke", function(d) { // if changed to red, Changes fill of all the nodes to red.
         var maxDelay = getMaxDelay(graph.links, "value").value;
         var maxEarly = getMaxEarly(graph.links, "value").value;
-        // console.log(maxDelay)
-        // console.log(maxEarly)
+
         if (d.value > acceptable_mins){
           percentage = 100 - (50+(50*((d.value-acceptable_mins)/(maxDelay-acceptable_mins))))
+          return green2red(percentage)
         }
-        else{
+        if(d.value < 10){
           percentage = 100 - (50*(1-((-1*(d.value-acceptable_mins)/(acceptable_mins+(-1*maxEarly))))))
+          return green2red(percentage)
         }
-
-        return green2red(percentage)
+        return ("#d3d3d3")
+        
         })
       .style("stroke-width", function(d) { return Math.max(1, Math.abs(d.dy)); })
       .sort(function(a, b) { return b.dy - a.dy; });
@@ -174,23 +177,35 @@ link.append("title")
   
   // a function that finds a partner for a given a link
   var findPartner = function(link){
-  
     // find all the classes of the link, with the exception of the link class
     var classes = link.attr('class').split(' ').filter(function(e){return e != linkClass; });
-    
+
     // build a jQuery selector for the corresponding element
     var classSelector = classes.map(function(e){return '.' + e}).join('');
-    
+
     // and return all jquery elements matching this selector
     return partners.filter(classSelector);
+  }
+
+  var searchCity = function(code){
+    cityClass = '.' + code
+    return partners.filter(cityClass)
   }
   
   // add handlers for entering and exiting any of the links
   links.hover(function(){
-    findPartner($(this)).addClass('hover');
+    findPartner($(this)).addClass('highlight');
   }, function(){
-    findPartner($(this)).removeClass('hover');
+    findPartner($(this)).removeClass('highlight');
   })
 
+  $( "#search" ).click(function() {
+    searchCity( $( "#city" ).val() ).addClass('highlight');
+  });
+
+  $( "#clear" ).click(function() {
+    searchCity( $( "#city" ).val() ).removeClass('highlight');
+    $( "#city" ).val( "" );
+  });
 
 });
