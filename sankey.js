@@ -162,16 +162,16 @@ link.append("title")
       .style("stroke", "#000");
 
 // add in the title for the nodes
-  // node.append("text")
-  //     .attr("x", -6)
-  //     .attr("y", function(d) { return d.dy / 2; })
-  //     .attr("dy", ".35em")
-  //     .attr("text-anchor", "end")
-  //     .attr("transform", null)
-  //     .text(function(d) { return d.name; })
-  //   .filter(function(d) { return d.x < width / 2; })
-  //     .attr("x", 6 + sankey.nodeWidth())
-  //     .attr("text-anchor", "start");
+  node.append("text")
+      .attr("x", -6)
+      .attr("y", function(d) { return d.dy / 2; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .attr("transform", null)
+      .text(function(d) { return d.name; })
+    .filter(function(d) { return d.x < width / 2; })
+      .attr("x", 6 + sankey.nodeWidth())
+      .attr("text-anchor", "start");
 
   // find all links and partners on the page
   var linkClass = 'link';
