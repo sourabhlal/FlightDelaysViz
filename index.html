@@ -61,6 +61,9 @@
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back">&lt;</a>
                 <h2 id="airport-name"></h2>
+
+                <svg id="delay-causes" width="45%" height="90%"></svg>
+                <svg id="delay-relations" width="45%" height="90%"></svg>
             </div>
             <a href="sankey.html">See airport visual</a>
         </div>
@@ -68,8 +71,12 @@
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/wolfy87-eventemitter@5.2.4/EventEmitter.min.js"></script>
         <script src="timeslider.js"></script>
+        <script src="data_components.js"></script>
         <script>
+let globalData = null
+let currentAirport = 'ABE'
 let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
     id: 'mapbox.world-dark',
     maxZoom: 20,
@@ -113,8 +120,7 @@ d3.csv('airports-delay.csv', (data) => {
         }).addTo(map)
 
         m.on('click', (event) => {
-            document.getElementById('airport-name').textContent =
-                'Welcome to ' + airport.Origin
+            currentAirport = airport.Origin
 
             toggleViews()
         })
@@ -129,7 +135,7 @@ function airportIcon(airport) {
 
     let delay = 0
     for (delay = 0; delay < delayLimits.length; delay++)
-        if (airport.DepDelay < delayLimits[delay])
+        if (airport.DepDelayMinutes < delayLimits[delay])
             break
 
     return icons[delay][traffic]
@@ -138,7 +144,150 @@ function airportIcon(airport) {
 function toggleViews() {
     document.getElementById('map').classList.toggle('hidden')
     document.getElementById('graphs').classList.toggle('hidden')
+
+    document.getElementById('airport-name').textContent =
+        'Welcome to ' + currentAirport
+    redrawDelayCauses()
 }
+
+redrawDelayCauses = (() => {
+    let svg = d3.select('svg#delay-causes')
+    let bounds = svg.node().getBoundingClientRect()
+    let innerMargin = 10
+    let margin = { top: 20, right: 10, bottom: 30, left: 75 }
+    let width = bounds.width - margin.left - margin.right
+    let height = bounds.height - margin.top - margin.bottom
+    let g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+
+    xDomain = []
+    for (let i = 1; i <= 31; i++)
+        xDomain.push(i)
+    let x = d3.scaleBand()
+        .domain(xDomain)
+        .rangeRound([0, width])
+        .padding(0.05)
+        .align(0.1)
+
+    let y = d3.scaleBand()
+        .paddingOuter(0.01)
+        .paddingInner(0.05)
+        .align(0.1)
+
+    let z = d3.interpolateMagma
+
+    let yBar = d3.scaleLinear()
+
+    d3.csv('delay-causes_2017_01.csv', (d, i, columns) => {
+        for (i = 2, t = 0; i < columns.length; ++i)
+            t += d[columns[i]] =+ d[columns[i]]
+
+        d.DayofMonth =+ d.DayofMonth
+        d.Total = t
+        return d
+    }, (error, data) => {
+        if (error) throw error
+
+        globalData = data
+        redrawDelayCauses()
+    })
+
+    return () => {
+        let data = globalData.filter((r) => r.Origin == currentAirport)
+        let keys = globalData.columns.slice(2).map((k) => k.substring(0, k.length - 5)).reverse()
+
+        let h = height - 1.11 * keys.length * x.bandwidth() - innerMargin
+
+        y.domain(keys)
+         .rangeRound([h + innerMargin, height])
+
+        yBar.domain([0, d3.max(data, (d) => d.Total)])
+            .rangeRound([h, 0])
+            .nice()
+
+        formattedData = []
+        data.forEach((day) =>
+            keys.forEach((key) =>
+                formattedData.push({
+                    key: key,
+                    dom: day.DayofMonth,
+                    val: day[key + 'Delay'] / day.Total,
+                }) ) )
+
+        g.selectAll('g').remove()
+        g.append('g')
+            .selectAll('rect')
+            .data(formattedData)
+            .enter().append('rect')
+                .attr('x', (d) => x(d.dom))
+                .attr('y', (d) => y(d.key))
+                .attr('fill', (d) => z(d.val))
+                .attr('height', y.bandwidth())
+                .attr('width', x.bandwidth())
+
+        let barWidth = Math.floor(x.bandwidth() * 0.2)
+        g.append('g')
+            .selectAll('rect')
+            .data(data)
+            .enter().append('rect')
+                .attr('x', (d) => x(d.DayofMonth) + (x.bandwidth() - barWidth) / 2.0)
+                .attr('y', (d) => yBar(d.Total))
+                .attr('fill', '#cecece')
+                .attr('width', barWidth)
+                .attr('height', (d) => h - yBar(d.Total))
+
+        let xAxis = g.append('g')
+            .attr('class', 'axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x))
+
+        xAxis.selectAll('text').attr('fill', '#cecece')
+        xAxis.selectAll('line').attr('stroke', '#cecece')
+        xAxis.selectAll('path').attr('stroke', '#cecece')
+
+        xAxis.append('text')
+            .attr('y', 25)
+            .attr('x', x(15))
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Day of Month')
+
+        let yAxis = g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(y))
+
+        yAxis.selectAll('text').attr('fill', '#cecece')
+        yAxis.selectAll('line').attr('stroke', '#cecece')
+        yAxis.selectAll('path').attr('stroke', '#cecece')
+
+        let yBarAxis = g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(yBar).ticks(null, 's'))
+
+        yBarAxis.selectAll('text').attr('fill', '#cecece')
+        yBarAxis.selectAll('line').attr('stroke', '#cecece')
+        yBarAxis.selectAll('path').attr('stroke', '#cecece')
+
+        yBarAxis.append('text')
+            .attr('x', 2)
+            .attr('y', yBar(yBar.ticks().pop()) + 0.5)
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Delay (min)')
+    }
+})()
+
+         let min_date = new Date(1999, 1, 1);
+         let max_date = new Date(2017, 8, 1);
+         const timesliderDiv = document.getElementById("timeslider");
+
+         const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
+         timeslider.draw();
+         const ds = new DataSource(timeslider);
         </script>
     </body>
 </html>
