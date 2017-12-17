@@ -34,6 +34,9 @@ function getMaxEarly(arr, prop) {
 
 function airportColor(airport){
   console.log("choose colour based on volume of flights from this airport");
+  if (airport.charAt(0) == "S"){
+    return "#0000FF";
+  }
   return "#000";
 }
 
@@ -109,7 +112,7 @@ var path = sankey.link();
     .links(graph.links)
     .layout(32);
 
-acceptable_mins = 30;
+acceptable_mins = 25;
 
 
 // add in the links
@@ -159,16 +162,16 @@ link.append("title")
       .style("stroke", "#000");
 
 // add in the title for the nodes
-  node.append("text")
-      .attr("x", -6)
-      .attr("y", function(d) { return d.dy / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end")
-      .attr("transform", null)
-      .text(function(d) { return d.name; })
-    .filter(function(d) { return d.x < width / 2; })
-      .attr("x", 6 + sankey.nodeWidth())
-      .attr("text-anchor", "start");
+  // node.append("text")
+  //     .attr("x", -6)
+  //     .attr("y", function(d) { return d.dy / 2; })
+  //     .attr("dy", ".35em")
+  //     .attr("text-anchor", "end")
+  //     .attr("transform", null)
+  //     .text(function(d) { return d.name; })
+  //   .filter(function(d) { return d.x < width / 2; })
+  //     .attr("x", 6 + sankey.nodeWidth())
+  //     .attr("text-anchor", "start");
 
   // find all links and partners on the page
   var linkClass = 'link';
