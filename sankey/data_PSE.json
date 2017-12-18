@@ -1,0 +1,1 @@
+{"nodes": [{"name": "PSE"}, {"name": "JFK"}, {"name": "MCO"}, {"name": "JFK"}, {"name": "MCO"}], "links": [{"source": 1, "target": 0, "value": 41.851851851851855}, {"source": 2, "target": 0, "value": 26.24137931034483}, {"source": 0, "target": 3, "value": 30.25925925925926}, {"source": 0, "target": 4, "value": 19.46551724137931}]}

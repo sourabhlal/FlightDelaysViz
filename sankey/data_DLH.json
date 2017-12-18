@@ -1,0 +1,1 @@
+{"nodes": [{"name": "DLH"}, {"name": "ORD"}, {"name": "MSP"}, {"name": "ORD"}, {"name": "MSP"}], "links": [{"source": 1, "target": 0, "value": 19.605504587155963}, {"source": 2, "target": 0, "value": 1.6849315068493151}, {"source": 0, "target": 3, "value": 22.15929203539823}, {"source": 0, "target": 4, "value": 1.904109589041096}]}

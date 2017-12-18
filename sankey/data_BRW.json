@@ -1,0 +1,1 @@
+{"nodes": [{"name": "BRW"}, {"name": "ANC"}, {"name": "SCC"}, {"name": "ANC"}, {"name": "FAI"}], "links": [{"source": 1, "target": 0, "value": 0.8823529411764706}, {"source": 2, "target": 0, "value": -5.35}, {"source": 0, "target": 3, "value": -9.604166666666666}, {"source": 0, "target": 4, "value": -10.482758620689655}]}

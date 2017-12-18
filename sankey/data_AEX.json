@@ -1,0 +1,1 @@
+{"nodes": [{"name": "AEX"}, {"name": "IAH"}, {"name": "ATL"}, {"name": "IAH"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": -2.3037974683544302}, {"source": 2, "target": 0, "value": -2.774193548387097}, {"source": 0, "target": 3, "value": 5.975}, {"source": 0, "target": 4, "value": 1.3548387096774193}]}

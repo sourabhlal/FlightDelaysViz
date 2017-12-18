@@ -1,0 +1,1 @@
+{"nodes": [{"name": "EKO"}, {"name": "SLC"}, {"name": "SLC"}], "links": [{"source": 1, "target": 0, "value": -4.745454545454545}, {"source": 0, "target": 2, "value": 1.018181818181818}]}

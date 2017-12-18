@@ -1,0 +1,1 @@
+{"nodes": [{"name": "CPR"}, {"name": "DEN"}, {"name": "SLC"}, {"name": "SLC"}, {"name": "DEN"}], "links": [{"source": 1, "target": 0, "value": -7.0}, {"source": 2, "target": 0, "value": -9.55}, {"source": 0, "target": 3, "value": -6.4}, {"source": 0, "target": 4, "value": -7.0}]}

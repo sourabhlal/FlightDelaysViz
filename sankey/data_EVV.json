@@ -1,0 +1,1 @@
+{"nodes": [{"name": "EVV"}, {"name": "ORD"}, {"name": "ATL"}, {"name": "ORD"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": 15.631147540983607}, {"source": 2, "target": 0, "value": 2.806451612903226}, {"source": 0, "target": 3, "value": 17.887096774193548}, {"source": 0, "target": 4, "value": -3.4193548387096775}]}

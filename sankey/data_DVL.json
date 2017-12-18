@@ -1,0 +1,1 @@
+{"nodes": [{"name": "DVL"}, {"name": "JMS"}, {"name": "DEN"}, {"name": "JMS"}], "links": [{"source": 1, "target": 0, "value": 2.69811320754717}, {"source": 0, "target": 2, "value": 30.272727272727273}, {"source": 0, "target": 3, "value": -5.774193548387097}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "ERI"}, {"name": "ORD"}, {"name": "DTW"}, {"name": "ORD"}, {"name": "DTW"}], "links": [{"source": 1, "target": 0, "value": 9.450980392156863}, {"source": 2, "target": 0, "value": 0.9186046511627907}, {"source": 0, "target": 3, "value": 1.9056603773584906}, {"source": 0, "target": 4, "value": 1.0232558139534884}]}

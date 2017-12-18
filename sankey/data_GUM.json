@@ -1,0 +1,1 @@
+{"nodes": [{"name": "GUM"}, {"name": "HNL"}, {"name": "HNL"}], "links": [{"source": 1, "target": 0, "value": 9.35483870967742}, {"source": 0, "target": 2, "value": 6.225806451612903}]}

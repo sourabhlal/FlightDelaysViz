@@ -1,0 +1,1 @@
+{"nodes": [{"name": "TWF"}, {"name": "SLC"}, {"name": "SLC"}], "links": [{"source": 1, "target": 0, "value": -2.4235294117647057}, {"source": 0, "target": 2, "value": -1.8823529411764706}]}

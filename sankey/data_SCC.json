@@ -1,0 +1,1 @@
+{"nodes": [{"name": "SCC"}, {"name": "ANC"}, {"name": "BRW"}], "links": [{"source": 1, "target": 0, "value": -0.7540983606557377}, {"source": 0, "target": 2, "value": -6.935483870967742}]}

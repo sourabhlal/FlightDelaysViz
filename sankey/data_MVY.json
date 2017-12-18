@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MVY"}, {"name": "JFK"}, {"name": "BOS"}, {"name": "JFK"}, {"name": "BOS"}], "links": [{"source": 1, "target": 0, "value": 5.947368421052632}, {"source": 2, "target": 0, "value": 3.806451612903226}, {"source": 0, "target": 3, "value": 36.1025641025641}, {"source": 0, "target": 4, "value": 16.161290322580644}]}

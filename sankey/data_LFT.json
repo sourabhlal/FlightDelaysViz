@@ -1,0 +1,1 @@
+{"nodes": [{"name": "LFT"}, {"name": "ATL"}, {"name": "IAH"}, {"name": "ATL"}, {"name": "IAH"}], "links": [{"source": 1, "target": 0, "value": 4.921739130434783}, {"source": 2, "target": 0, "value": 0.25}, {"source": 0, "target": 3, "value": 6.568965517241379}, {"source": 0, "target": 4, "value": 0.3194444444444444}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "INL"}, {"name": "MSP"}, {"name": "MSP"}], "links": [{"source": 1, "target": 0, "value": -10.037037037037036}, {"source": 0, "target": 2, "value": 4.074074074074074}]}

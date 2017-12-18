@@ -1,0 +1,1 @@
+{"nodes": [{"name": "SRQ"}, {"name": "ATL"}, {"name": "JFK"}, {"name": "JFK"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": 6.123595505617978}, {"source": 2, "target": 0, "value": -6.774193548387097}, {"source": 0, "target": 3, "value": 8.466666666666667}, {"source": 0, "target": 4, "value": 5.50561797752809}]}

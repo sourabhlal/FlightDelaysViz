@@ -1,0 +1,1 @@
+{"nodes": [{"name": "EGE"}, {"name": "DFW"}, {"name": "IAH"}, {"name": "IAH"}, {"name": "DFW"}], "links": [{"source": 1, "target": 0, "value": 52.935483870967744}, {"source": 2, "target": 0, "value": 22.666666666666668}, {"source": 0, "target": 3, "value": -2.5555555555555554}, {"source": 0, "target": 4, "value": -5.193548387096774}]}

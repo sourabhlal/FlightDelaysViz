@@ -1,0 +1,1 @@
+{"nodes": [{"name": "LAW"}, {"name": "DFW"}, {"name": "DFW"}], "links": [{"source": 1, "target": 0, "value": 10.52808988764045}, {"source": 0, "target": 2, "value": 8.382022471910112}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "RDD"}, {"name": "SFO"}, {"name": "SFO"}], "links": [{"source": 1, "target": 0, "value": 1.2365591397849462}, {"source": 0, "target": 2, "value": 23.591397849462364}]}

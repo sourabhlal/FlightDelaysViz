@@ -1,0 +1,1 @@
+{"nodes": [{"name": "PPG"}, {"name": "HNL"}, {"name": "HNL"}], "links": [{"source": 1, "target": 0, "value": -7.846153846153846}, {"source": 0, "target": 2, "value": -4.615384615384615}]}

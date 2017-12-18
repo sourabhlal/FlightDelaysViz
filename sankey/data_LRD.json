@@ -1,0 +1,1 @@
+{"nodes": [{"name": "LRD"}, {"name": "DFW"}, {"name": "IAH"}, {"name": "DFW"}, {"name": "IAH"}], "links": [{"source": 1, "target": 0, "value": 9.850574712643677}, {"source": 2, "target": 0, "value": -1.948051948051948}, {"source": 0, "target": 3, "value": 4.9772727272727275}, {"source": 0, "target": 4, "value": 3.6025641025641026}]}

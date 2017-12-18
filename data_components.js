@@ -15,8 +15,8 @@ function getJson(filename, target) {
 // TODO Test data: remove
 const data1 = {data: null, ready: false, targetCity: 'JFK'};
 const data2 = {data: null, ready: false, targetCity: "SFO"};
-getJson("data/sankey/data_JFK.json", data1);
-getJson("data/sankey/data_SFO.json", data2);
+getJson("sankey/data_JFK.json", data1);
+getJson("sankey/data_SFO.json", data2);
 
 class DataSource {
     constructor(timeComponent) {
@@ -52,7 +52,7 @@ class DataSource {
     }
 
     getSankey(airport) {
-        const jsonFile = "data/sankey/data_" + airport + ".json";
+        const jsonFile = "sankey/data_" + airport + ".json";
         d3.json(jsonFile, (json) => {
             this.sankeyData = json;
             this.sankeyData.links.forEach((l) => {

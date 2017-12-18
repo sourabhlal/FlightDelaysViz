@@ -1,0 +1,1 @@
+{"nodes": [{"name": "APN"}, {"name": "DTW"}, {"name": "PLN"}, {"name": "PLN"}, {"name": "DTW"}], "links": [{"source": 1, "target": 0, "value": -1.2333333333333334}, {"source": 2, "target": 0, "value": -8.0}, {"source": 0, "target": 3, "value": 75.35}, {"source": 0, "target": 4, "value": 15.4}]}

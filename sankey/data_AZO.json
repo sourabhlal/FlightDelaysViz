@@ -1,0 +1,1 @@
+{"nodes": [{"name": "AZO"}, {"name": "ORD"}, {"name": "DTW"}, {"name": "MSP"}, {"name": "ORD"}, {"name": "DTW"}], "links": [{"source": 1, "target": 0, "value": 18.664556962025316}, {"source": 2, "target": 0, "value": 6.619047619047619}, {"source": 3, "target": 0, "value": -6.0}, {"source": 0, "target": 4, "value": 15.8875}, {"source": 0, "target": 5, "value": 7.6875}]}

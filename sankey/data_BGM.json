@@ -1,0 +1,1 @@
+{"nodes": [{"name": "BGM"}, {"name": "DTW"}, {"name": "DTW"}], "links": [{"source": 1, "target": 0, "value": 7.0588235294117645}, {"source": 0, "target": 2, "value": 2.8941176470588235}]}

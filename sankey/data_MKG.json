@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MKG"}, {"name": "ORD"}, {"name": "ORD"}], "links": [{"source": 1, "target": 0, "value": 15.418181818181818}, {"source": 0, "target": 2, "value": 23.2}]}

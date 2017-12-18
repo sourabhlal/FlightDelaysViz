@@ -1,0 +1,1 @@
+{"nodes": [{"name": "GPT"}, {"name": "ATL"}, {"name": "IAH"}, {"name": "IAH"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": 0.17857142857142858}, {"source": 2, "target": 0, "value": -1.819277108433735}, {"source": 0, "target": 3, "value": 4.858823529411764}, {"source": 0, "target": 4, "value": 4.283185840707965}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MGM"}, {"name": "ATL"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": 8.555555555555555}, {"source": 0, "target": 2, "value": 8.592592592592593}]}

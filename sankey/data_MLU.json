@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MLU"}, {"name": "ATL"}, {"name": "IAH"}, {"name": "ATL"}, {"name": "IAH"}], "links": [{"source": 1, "target": 0, "value": 11.354545454545455}, {"source": 2, "target": 0, "value": -10.425925925925926}, {"source": 0, "target": 3, "value": 19.845454545454544}, {"source": 0, "target": 4, "value": -3.185185185185185}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "DLG"}, {"name": "ANC"}, {"name": "ANC"}], "links": [{"source": 1, "target": 0, "value": -9.67741935483871}, {"source": 0, "target": 2, "value": -3.6774193548387095}]}

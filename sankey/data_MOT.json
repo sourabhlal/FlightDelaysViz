@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MOT"}, {"name": "DEN"}, {"name": "MSP"}, {"name": "MSP"}, {"name": "DEN"}], "links": [{"source": 1, "target": 0, "value": 6.423728813559322}, {"source": 2, "target": 0, "value": 0.061224489795918366}, {"source": 0, "target": 3, "value": 0.3469387755102041}, {"source": 0, "target": 4, "value": -3.8983050847457625}]}

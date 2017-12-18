@@ -1,0 +1,1 @@
+{"nodes": [{"name": "SAF"}, {"name": "PHX"}, {"name": "DFW"}, {"name": "DFW"}, {"name": "PHX"}], "links": [{"source": 1, "target": 0, "value": 3.6451612903225805}, {"source": 2, "target": 0, "value": 1.7916666666666667}, {"source": 0, "target": 3, "value": 8.221052631578948}, {"source": 0, "target": 4, "value": 1.3870967741935485}]}

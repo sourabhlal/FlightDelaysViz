@@ -1,0 +1,1 @@
+{"nodes": [{"name": "GRI"}, {"name": "DFW"}, {"name": "DFW"}], "links": [{"source": 1, "target": 0, "value": 11.228070175438596}, {"source": 0, "target": 2, "value": -1.8421052631578947}]}

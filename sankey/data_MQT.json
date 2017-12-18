@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MQT"}, {"name": "DTW"}, {"name": "MSP"}, {"name": "DTW"}, {"name": "MSP"}], "links": [{"source": 1, "target": 0, "value": 16.61111111111111}, {"source": 2, "target": 0, "value": -11.366666666666667}, {"source": 0, "target": 3, "value": 9.672727272727272}, {"source": 0, "target": 4, "value": 2.3870967741935485}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "MEI"}, {"name": "ORD"}, {"name": "PIB"}, {"name": "ORD"}, {"name": "PIB"}, {"name": "DFW"}], "links": [{"source": 1, "target": 0, "value": 88.90322580645162}, {"source": 2, "target": 0, "value": 39.55}, {"source": 0, "target": 3, "value": 55.903225806451616}, {"source": 0, "target": 4, "value": 49.56666666666667}, {"source": 0, "target": 5, "value": 47.4}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "HYA"}, {"name": "JFK"}, {"name": "JFK"}], "links": [{"source": 1, "target": 0, "value": 3.870967741935484}, {"source": 0, "target": 2, "value": 17.193548387096776}]}

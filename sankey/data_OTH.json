@@ -1,0 +1,1 @@
+{"nodes": [{"name": "OTH"}, {"name": "SFO"}, {"name": "DEN"}, {"name": "SFO"}, {"name": "DEN"}], "links": [{"source": 1, "target": 0, "value": 22.433333333333334}, {"source": 2, "target": 0, "value": 7.0}, {"source": 0, "target": 3, "value": 52.54838709677419}, {"source": 0, "target": 4, "value": 9.0}]}

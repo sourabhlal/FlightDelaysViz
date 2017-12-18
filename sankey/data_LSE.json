@@ -1,0 +1,1 @@
+{"nodes": [{"name": "LSE"}, {"name": "ORD"}, {"name": "MSP"}, {"name": "ORD"}, {"name": "MSP"}], "links": [{"source": 1, "target": 0, "value": 20.723214285714285}, {"source": 2, "target": 0, "value": -3.070588235294118}, {"source": 0, "target": 3, "value": 18.919642857142858}, {"source": 0, "target": 4, "value": -6.694117647058824}]}

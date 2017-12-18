@@ -1,0 +1,1 @@
+{"nodes": [{"name": "BET"}, {"name": "ANC"}, {"name": "ANC"}], "links": [{"source": 1, "target": 0, "value": -0.8589743589743589}, {"source": 0, "target": 2, "value": -4.512820512820513}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "CLL"}, {"name": "DFW"}, {"name": "IAH"}, {"name": "IAH"}, {"name": "DFW"}], "links": [{"source": 1, "target": 0, "value": 0.16129032258064516}, {"source": 2, "target": 0, "value": -6.09433962264151}, {"source": 0, "target": 3, "value": -6.226415094339623}, {"source": 0, "target": 4, "value": -6.258064516129032}]}

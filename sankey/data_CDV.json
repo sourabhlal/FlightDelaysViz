@@ -1,0 +1,1 @@
+{"nodes": [{"name": "CDV"}, {"name": "ANC"}, {"name": "YAK"}, {"name": "YAK"}, {"name": "ANC"}], "links": [{"source": 1, "target": 0, "value": 2.838709677419355}, {"source": 2, "target": 0, "value": -11.1}, {"source": 0, "target": 3, "value": -6.32258064516129}, {"source": 0, "target": 4, "value": -14.333333333333334}]}

@@ -1,0 +1,1 @@
+{"nodes": [{"name": "HDN"}, {"name": "DEN"}, {"name": "IAH"}, {"name": "DEN"}, {"name": "IAH"}], "links": [{"source": 1, "target": 0, "value": 15.090909090909092}, {"source": 2, "target": 0, "value": -4.137931034482759}, {"source": 0, "target": 3, "value": 2.2037037037037037}, {"source": 0, "target": 4, "value": -0.75}]}

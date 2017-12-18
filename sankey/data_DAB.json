@@ -1,0 +1,1 @@
+{"nodes": [{"name": "DAB"}, {"name": "ATL"}, {"name": "JFK"}, {"name": "JFK"}, {"name": "ATL"}], "links": [{"source": 1, "target": 0, "value": 3.3741496598639458}, {"source": 2, "target": 0, "value": -1.6451612903225807}, {"source": 0, "target": 3, "value": 6.258064516129032}, {"source": 0, "target": 4, "value": 3.5374149659863945}]}
