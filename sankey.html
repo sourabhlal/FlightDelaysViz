@@ -34,13 +34,13 @@
           <input type="text" class="form-control" name="search" id="city" value="" placeholder="Search for a connection">
         </div>
         <div class="col-2">
-          <button id="search" class="btn btn-primary" type="button">Search</button> 
-          <button id="clear" class="btn btn-primary" type="button">Clear</button> 
+          <button id="search" class="btn btn-primary" type="button">Search</button>
+          <button id="clear" class="btn btn-primary" type="button">Clear</button>
         </div>
       </div>
-    </form>  
-    
-    <div id="sankey"><svg width=2100 height=1000 id="chart"></svg></div>
+    </form>
+
+    <svg id="sankey" width=1100 height=1000 id="chart"></svg>
 
     <!--SCRIPTS-->
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -60,7 +60,7 @@
      const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
      timeslider.draw();
      const ds = new DataSource(timeslider);
-     const skey = new SankeyDiagram(ds);
+     const skey = new SankeyDiagram(ds, document.getElementById("sankey"));
     </script>
 
 </body>

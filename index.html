@@ -4,6 +4,7 @@
         <meta charset="utf8">
         <title>Flight Delays</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
+        <link rel="stylesheet" type="text/css" href="sankey.css">
         <style>
             body,html {
                 width: 100%;
@@ -61,19 +62,22 @@
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back">&lt;</a>
                 <h2 id="airport-name"></h2>
-
+                <svg id="sankey" width="45%" height="90%"></svg>
                 <svg id="delay-causes" width="45%" height="90%"></svg>
                 <svg id="delay-relations" width="45%" height="90%"></svg>
             </div>
-            <a href="sankey.html">See airport visual</a>
         </div>
         <div id="controls"></div>
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
         <script src="https://unpkg.com/wolfy87-eventemitter@5.2.4/EventEmitter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.7.1/d3-sankey.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="timeslider.js"></script>
         <script src="data_components.js"></script>
+        <script type="text/javascript" src="d3-sankey.js"></script>
+        <script type="text/javascript" src="sankey.js"></script>
         <script>
 let globalData = null
 let currentAirport = 'ABE'
@@ -120,9 +124,10 @@ d3.csv('airports-delay.csv', (data) => {
         }).addTo(map)
 
         m.on('click', (event) => {
-            currentAirport = airport.Origin
+             currentAirport = airport.Origin;
+             dataSrc.airportChange(currentAirport);
 
-            toggleViews()
+             toggleViews();
         })
     })
 })
@@ -287,7 +292,8 @@ redrawDelayCauses = (() => {
 
          const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
          timeslider.draw();
-         const ds = new DataSource(timeslider);
+         const dataSrc = new DataSource(timeslider);
+         const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
         </script>
     </body>
 </html>
