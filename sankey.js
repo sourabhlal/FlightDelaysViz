@@ -54,12 +54,12 @@ class SankeyDiagram {
         this.dataSrc = dataSrc;
         dataSrc.dataEventEmitter.addListener('sankeyDataAvailable', () => this.handleData());
         this.data = null;
-        this.svg = d3.select(container).attr("style", "outline: thin solid grey;");
+        this.svg = d3.select(container);
         this.width = container.clientWidth;
         this.height = container.clientHeight;
         this.sankey = d3.sankey()
-            .nodeWidth(15)
-            .nodePadding(10)
+            .nodeWidth(40)
+            .nodePadding(7)
             .size([this.width, this.height]);
         this.link = this.svg.append("g")
             .attr("class", "links")
@@ -78,7 +78,7 @@ class SankeyDiagram {
         this.sankey
             .nodes(graph.nodes)
             .links(graph.links)
-            .layout(32);
+            .layout(64);
 
         var path = this.sankey.link();
 
@@ -156,16 +156,7 @@ class SankeyDiagram {
             .attr("width", this.sankey.nodeWidth())
             .attr("fill", function(d) { return airportColor(d.name); })
             .attr("stroke", "#000");
-        const text = g.append("text")
-            .attr("x", -6)
-            .attr("y", function(d) { return d.dy / 2; })
-            .attr("dy", "0.35em")
-            .attr("text-anchor", "end")
-            .attr("transform", null)
-            .text(function(d) { return d.name; })
-            .filter((d) => d.x < this.width / 2)
-            .attr("x", 6 + this.sankey.nodeWidth())
-            .attr("text-anchor", "start");
+
 
         node.exit().remove();
         nd.exit().remove();
