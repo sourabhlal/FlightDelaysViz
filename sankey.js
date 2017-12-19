@@ -216,5 +216,20 @@ class SankeyDiagram {
         }, function(){
             findPartner($(this)).removeClass('highlight');
         });
+
+        var searchCity = function(code){
+          cityClass = '.' + code
+          return partners.filter(cityClass)
+        }
+          
+        $( "#search" ).click(function() {
+          searchCity( $( "#city" ).val() ).addClass('highlight');
+        });
+
+        $( "#clear" ).click(function() {
+          searchCity( $( "#city" ).val() ).removeClass('highlight');
+          $( "#city" ).val( "" );
+        });
+
     }
 }
