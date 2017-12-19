@@ -25,26 +25,32 @@
                 height: 50px;
             }
             #map {
-                width: 100%;
-                height: calc(100% - 70px);
-                position: relative;
+                width: 50%;
+                height: calc(100% - 50px);
+                position: absolute;
                 left: 0px;
-                transition: left 2s;
+                transition: left .8s;
+                z-index: 0;
             }
-            #map.hidden { left: -100%; }
+            /* #map.hidden { left: -100%; } */
             #graphs {
                 width: 100%;
-                height: calc(100% - 80px);
+                height: calc(100% - 50px);
                 padding: 1em;
                 background-color: #424242;
                 color: #cecece;
                 position: absolute;
                 left: 0px;
-                top: 50px;
-                transition: left 2s;
+                transition: left .8s;
+                z-index: 0;
             }
-            #graphs.hidden { left: 100%; }
+            #graphs.hidden { left: 50%; }
             #graphs h2 { padding-left: 3.14169em; margin: 0; }
+
+            #delay-causes, #sankey {
+                width: 49%;
+                height: 90%;
+            }
 
             .btn-back, .btn-back:visited, .btn-back:active, .btn-back:hover {
                 color: #cecece;
@@ -60,13 +66,12 @@
             <div id="timeslider"></div>
             <div id="map"></div>
             <div id="graphs" class="hidden">
-                <a href="#" onclick="toggleViews()" class="btn-back">&lt;</a>
-                <h2 id="airport-name"></h2>
-                <svg id="delay-causes" width="45%" height="90%"></svg>
-                <svg id="sankey" width="45%" height="90%"></svg>
+                <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
+                <h2 id="airport-name">Select an airport</h2>
+                <svg id="delay-causes"></svg>
+                <svg id="sankey"></svg>
             </div>
         </div>
-        <div id="controls"></div>
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
@@ -122,11 +127,13 @@ d3.csv('airports-delay.csv', (data) => {
             title: airport.Origin,
         }).addTo(map)
 
-        m.on('click', (event) => {
-             currentAirport = airport.Origin;
-             dataSrc.airportChange(currentAirport);
+        m.on('click', (event) => toggleViews())
+        m.on('mouseover', (event) => {
+             currentAirport = airport.Origin
+             dataSrc.airportChange(currentAirport)
 
-             toggleViews();
+             //toggleViews()
+             updateViews()
         })
     })
 })
@@ -145,13 +152,20 @@ function airportIcon(airport) {
     return icons[delay][traffic]
 }
 
-function toggleViews() {
-    document.getElementById('map').classList.toggle('hidden')
-    document.getElementById('graphs').classList.toggle('hidden')
-
+function updateViews() {
     document.getElementById('airport-name').textContent =
         'Welcome to ' + currentAirport
     redrawDelayCauses()
+}
+
+function toggleViews() {
+    document.getElementById('map').classList.toggle('hidden')
+    document.getElementById('graphs').classList.toggle('hidden')
+    toggleLabel(document.getElementById('btn-back'))
+}
+
+function toggleLabel(btn) {
+    btn.textContent = btn.textContent == ' ' ? '>' : ' '
 }
 
 redrawDelayCauses = (() => {
