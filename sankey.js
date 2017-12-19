@@ -152,7 +152,7 @@ class SankeyDiagram {
                   .attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
         const rect = g.append("rect")
-            .attr("height", function(d) { return d.dy; })
+            .attr("height", function(d) { return Math.max(1, Math.abs(d.dy)); })
             .attr("width", this.sankey.nodeWidth())
             .attr("fill", function(d) { return airportColor(d.name); })
             .attr("stroke", "#000");
@@ -218,8 +218,7 @@ class SankeyDiagram {
         });
 
         var searchCity = function(code){
-          cityClass = '.' + code
-          return partners.filter(cityClass)
+          return partners.filter('.' + code)
         }
           
         $( "#search" ).click(function() {
