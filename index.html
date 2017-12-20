@@ -46,7 +46,12 @@
                 z-index: 0;
             }
             #graphs.hidden { left: 50%; }
-            #graphs h2 { padding-left: 3.14169em; margin: 0; }
+            #graphs h2 {
+                padding-left: 3.14169em;
+                margin: 0;
+                margin-bottom: .5em;
+                display: inline-block;
+            }
 
             #delay-causes, #sankey {
                 width: 49%;
@@ -60,27 +65,72 @@
                 font-size: 24px;
                 float: left;
             }
+
+            #map-labels {
+                padding: 10px;
+                position: absolute;
+                right: calc(50% + 10px);
+                top: 60px;
+                width: 100px;
+                background-color: #424242;
+                color: #cecece;
+                text-align: center;
+            }
+
+            #map-labels h3 {
+                margin: 0;
+                font-size: 14px;
+            }
+
+            #map-labels table {
+                width: 100%;
+            }
+
+            #map-labels td {
+                font-size: 8px;
+            }
+
+            #map-labels td img {
+                height: 3.14159em;
+            }
+
+            input#city {
+                width: 14em;
+                float: right;
+                margin-right: calc(25% - 7em);
+            }
         </style>
     </head>
     <body>
         <div id="container">
             <div id="timeslider"></div>
             <div id="map"></div>
+            <div id="map-labels">
+                <h3>Delays</h3>
+                <table>
+                    <tr> <td>&lt; 15 min</td> <td>&lt; 30 min</td> </tr>
+                    <tr> <td><img src="marker-none.svg" /></td> <td><img src="marker-low.svg" /></td> </tr>
+                    <tr> <td>&lt; 45 min</td> <td>&lt; 60 min</td> </tr>
+                    <tr> <td><img src="marker-medium.svg" /></td> <td><img src="marker-high.svg" /></td> </tr>
+                    <tr> <td>&gt; 60 min</td> <td></td> </tr>
+                    <tr> <td><img src="marker-extreme.svg" /></td> <td></td> </tr>
+                </table>
+
+                <h3>Traffic</h3>
+                <table>
+                    <tr> <td>&lt; 50 flights</td> <td>&lt; 100 flights</td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="5" /></td> <td><img src="marker-low.svg" width="10" /></td> </tr>
+                    <tr> <td>&lt; 200 flights</td> <td>&lt; 5000 flights</td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="15" /></td> <td><img src="marker-low.svg" width="20" /></td> </tr>
+                    <tr> <td>&gt; 5000 flights</td> <td></td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="25" /></td> <td></td> </tr>
+                </table>
+            </div>
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
                 <h2 id="airport-name">Select an airport</h2>
-                  <form>
-                   <div class="form-row">
-                     <div class="col-4">
-                       <input type="text" class="form-control" name="search" id="city" value="" placeholder="Search for a connection">
-                     </div>
-                     <div class="col-2">
-                       <button id="search" class="btn btn-primary" type="button">Search</button> 
-                       <button id="clear" class="btn btn-primary" type="button">Clear</button> 
-                     </div>
-                   </div>
-                 </form>  
-                <svg id="delay-causes"></svg>
+                <input type="text" class="form-control" name="search" id="city" placeholder="Search for a connection" />
+                <svg id="delay-causes" style="width: 50%"></svg>
                 <svg id="sankey"></svg>
             </div>
         </div>
@@ -96,7 +146,7 @@
         <script type="text/javascript" src="sankey.js"></script>
         <script>
 let globalData = null
-let currentAirport = 'ABE'
+let currentAirport = null
 let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
     id: 'mapbox.world-dark',
     maxZoom: 20,
