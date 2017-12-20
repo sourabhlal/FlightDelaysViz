@@ -4,6 +4,7 @@
         <meta charset="utf8">
         <title>Flight Delays</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="sankey.css">
         <style>
             body,html {
@@ -117,6 +118,17 @@
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
                 <h2 id="airport-name">Select an airport</h2>
+                  <form>
+                   <div class="form-row">
+                     <div class="col-4">
+                       <input type="text" class="form-control" name="search" id="city" value="" placeholder="Search for a connection">
+                     </div>
+                     <div class="col-2">
+                       <button id="search" class="btn btn-primary" type="button">Search</button> 
+                       <button id="clear" class="btn btn-primary" type="button">Clear</button> 
+                     </div>
+                   </div>
+                 </form>  
                 <svg id="delay-causes"></svg>
                 <svg id="sankey"></svg>
             </div>
