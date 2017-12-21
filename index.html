@@ -277,7 +277,7 @@ redrawDelayCauses = (() => {
         yDomain.forEach((cause) =>
     */
 
-    d3.csv('data/delay-causes_2017_1.csv', (d, i, columns) => {
+    d3.csv('_data/delay-causes_2017_1.csv', (d, i, columns) => {
         for (i = 2, t = 0; i < columns.length; ++i)
             t += d[columns[i]] =+ d[columns[i]]
 
@@ -449,7 +449,7 @@ function loadMonths(months) {
     let ps = months
       .filter((m) => !(m in causesMonths))
       .map((m) => new Promise((resolve, reject) =>
-          d3.csv('data/delay-causes_' + m + '.csv', (error, data) => {
+          d3.csv('_data/delay-causes_' + m + '.csv', (error, data) => {
               if (error) reject(error)
               else resolve([m, data])
           })))
