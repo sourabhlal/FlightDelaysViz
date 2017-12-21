@@ -82,6 +82,10 @@
                 font-size: 14px;
             }
 
+            #map-labels h3 span {
+                font-size: 10px;
+            }
+
             #map-labels table {
                 width: 100%;
             }
@@ -90,7 +94,7 @@
                 font-size: 8px;
             }
 
-            #map-labels td img {
+            #map-labels .labels-delay td img {
                 height: 3.14159em;
             }
 
@@ -106,8 +110,8 @@
             <div id="timeslider"></div>
             <div id="map"></div>
             <div id="map-labels">
-                <h3>Delays</h3>
-                <table>
+                <h3>Delays <span>(90%-ile)<span></h3>
+                <table class="labels-delay">
                     <tr> <td>&lt; 15 min</td> <td>&lt; 30 min</td> </tr>
                     <tr> <td><img src="marker-none.svg" /></td> <td><img src="marker-low.svg" /></td> </tr>
                     <tr> <td>&lt; 45 min</td> <td>&lt; 60 min</td> </tr>
@@ -182,6 +186,7 @@ let icons = delayCategories.map((del, del_id) =>
     )
 )
 
+let airportsMarkers = {}
 d3.csv('airports-delay.csv', (data) => {
     data.forEach((airport) => {
         let m = L.marker([airport.Lat, airport.Lng], {
@@ -197,6 +202,8 @@ d3.csv('airports-delay.csv', (data) => {
              //toggleViews()
              updateViews()
         })
+
+        airportsMarkers[airport.Origin] = m
     })
 })
 
@@ -249,7 +256,9 @@ redrawDelayCauses = (() => {
         .padding(0.05)
         .align(0.1)
 
+    yDomain = ['Unknown', 'LateAircraft', 'Security', 'NAS', 'Weather', 'Carrier']
     let y = d3.scaleBand()
+        .domain(yDomain)
         .paddingOuter(0.01)
         .paddingInner(0.05)
         .align(0.1)
@@ -258,7 +267,17 @@ redrawDelayCauses = (() => {
 
     let yBar = d3.scaleLinear()
 
-    d3.csv('delay-causes_2017_01.csv', (d, i, columns) => {
+    /* TODO: add scales, process months, load stuffs */
+
+
+    // Build the graph
+    /*
+    let baseData = []
+    xDomain.forEach((day) =>
+        yDomain.forEach((cause) =>
+    */
+
+    d3.csv('data/delay-causes_2017_1.csv', (d, i, columns) => {
         for (i = 2, t = 0; i < columns.length; ++i)
             t += d[columns[i]] =+ d[columns[i]]
 
@@ -274,9 +293,15 @@ redrawDelayCauses = (() => {
 
     return () => {
         let data = globalData.filter((r) => r.Origin == currentAirport)
-        let keys = globalData.columns.slice(2).map((k) => k.substring(0, k.length - 5)).reverse()
+        let keys = yDomain
 
         let h = height - 1.11 * keys.length * x.bandwidth() - innerMargin
+
+        data.forEach(d => {
+            let t = 0
+            yDomain.forEach(f => t += d[f + 'Delay'])
+            d.Total = t
+        })
 
         y.domain(keys)
          .rangeRound([h + innerMargin, height])
@@ -299,6 +324,7 @@ redrawDelayCauses = (() => {
             .selectAll('rect')
             .data(formattedData)
             .enter().append('rect')
+                .attr('class', 'cause')
                 .attr('x', (d) => x(d.dom))
                 .attr('y', (d) => y(d.key))
                 .attr('fill', (d) => z(d.val))
@@ -307,9 +333,12 @@ redrawDelayCauses = (() => {
 
         let barWidth = Math.floor(x.bandwidth() * 0.2)
         g.append('g')
+         .attr('class', 'causes')
+         .attr('fill', 'black')
             .selectAll('rect')
             .data(data)
             .enter().append('rect')
+                .attr('class', 'delay')
                 .attr('x', (d) => x(d.DayofMonth) + (x.bandwidth() - barWidth) / 2.0)
                 .attr('y', (d) => yBar(d.Total))
                 .attr('fill', '#cecece')
@@ -317,7 +346,7 @@ redrawDelayCauses = (() => {
                 .attr('height', (d) => h - yBar(d.Total))
 
         let xAxis = g.append('g')
-            .attr('class', 'axis')
+            .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3.axisBottom(x))
 
@@ -343,7 +372,7 @@ redrawDelayCauses = (() => {
         yAxis.selectAll('path').attr('stroke', '#cecece')
 
         let yBarAxis = g.append('g')
-            .attr('class', 'axis')
+            .attr('class', 'y axis')
             .call(d3.axisLeft(yBar).ticks(null, 's'))
 
         yBarAxis.selectAll('text').attr('fill', '#cecece')
@@ -361,14 +390,78 @@ redrawDelayCauses = (() => {
     }
 })()
 
-         let min_date = new Date(1999, 1, 1);
-         let max_date = new Date(2017, 8, 1);
+         let min_date = new Date(2016, 0, 1);
+         let max_date = new Date(2017, 8, 30);
          const timesliderDiv = document.getElementById("timeslider");
 
          const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
          timeslider.draw();
          const dataSrc = new DataSource(timeslider);
          const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
+
+let fetching = false
+let causesMonths = {}
+
+function sumDelays(a, b) {
+    a.Origin = b.Origin
+    a.DayofMonth =+ b.DayofMonth
+    a.CarrierDelay  +=+ b.CarrierDelay
+    a.WeatherDelay  +=+ b.WeatherDelay
+    a.NASDelay      +=+ b.NASDelay
+    a.SecurityDelay +=+ b.SecurityDelay
+    a.LateAircraftDelay +=+ b.LateAircraftDelay
+    a.UnknownDelay  +=+ b.UnknownDelay
+
+    return a
+}
+
+function groupBy(xs, key) {
+    return xs.reduce((acc, x) => {
+        acc[key(x)] = acc[key(x)] || { CarrierDelay: 0, WeatherDelay: 0, NASDelay: 0, SecurityDelay: 0, LateAircraftDelay: 0, UnknownDelay: 0 }
+        sumDelays(acc[key(x)], x)
+        return acc
+    }, {})
+}
+
+// Update markers
+timeslider.timeEventEmitter.addListener('timeChange', () => {
+    if (fetching) return;
+    fetching = true;
+
+    let start = new Date(timeslider.selectedStartDate)
+    let end = new Date(timeslider.selectedEndDate)
+
+    let months = []
+    for (start; start < end; start.setMonth(start.getMonth() + 1))
+        months.push((1900 + start.getYear()) + '_' + (start.getMonth() + 1))
+
+    loadMonths(months)
+      .then(ms => [].concat.apply([], ms))
+      .then(ms => Object.values(groupBy(ms, (m) => m.Origin + '-' + m.DayofMonth)))
+      .then(data => globalData = data)
+      .then(redrawDelayCauses)
+})
+
+function loadMonths(months) {
+    let ms = months
+      .filter((m) => !(m in causesMonths))
+
+    let ps = months
+      .filter((m) => !(m in causesMonths))
+      .map((m) => new Promise((resolve, reject) =>
+          d3.csv('data/delay-causes_' + m + '.csv', (error, data) => {
+              if (error) reject(error)
+              else resolve([m, data])
+          })))
+
+    return Promise.all(ps)
+      .catch(e => console.err(e))
+      .finally(() => fetching = false)
+      .then(ds =>
+          ds.forEach((d) => causesMonths[d[0]] = d[1]))
+      .then(() =>
+          months.map(m => causesMonths[m]))
+}
         </script>
     </body>
 </html>
