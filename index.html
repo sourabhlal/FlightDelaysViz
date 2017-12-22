@@ -206,7 +206,7 @@ let icons = delayCategories.map((del, del_id) =>
 
 let airportsData = null
 let airportsMarkers = {}
-d3.csv('data/airports-delay.csv', (data) => {
+d3.csv('airports-delay.csv', (data) => {
     airportsData = data
     filterMarkers().forEach((airport) => {
         let m = L.marker([airport.Lat, airport.Lng], {
