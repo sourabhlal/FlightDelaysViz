@@ -184,7 +184,7 @@ d3.sankey = function() {
       });
 
       links.forEach(function(link) {
-        link.dy = link.value * ky;
+          link.dy = value(link) * ky;
       });
     }
 
@@ -199,7 +199,7 @@ d3.sankey = function() {
       });
 
       function weightedSource(link) {
-        return center(link.source) * link.value;
+          return center(link.source) * value(link);
       }
     }
 
@@ -214,7 +214,7 @@ d3.sankey = function() {
       });
 
       function weightedTarget(link) {
-        return center(link.target) * link.value;
+          return center(link.target) * value(link);
       }
     }
 
@@ -287,7 +287,7 @@ d3.sankey = function() {
   }
 
   function value(link) {
-    return link.value;
+    return Math.abs(link.value);
   }
 
   return sankey;
