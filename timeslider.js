@@ -3,8 +3,19 @@ class TimeSlider {
         this.containerDiv = options.containerDiv;
         this.startDate = options.startDate;
         this.endDate = options.endDate;
-        this.selectedStartDate = this.startDate;
-        this.selectedEndDate = this.endDate;
+        this.triggerBrush = false;
+        if (options.selectedStartDate !== undefined) {
+            this.selectedStartDate = options.selectedStartDate;
+            this.triggerBrush = true;
+        } else {
+            this.selectedStartDate = this.startDate;
+        }
+        if (options.selectedEndDate !== undefined) {
+            this.selectedEndDate = options.selectedEndDate;
+            this.triggerBrush = true;
+        } else {
+            this.selectedEndDate = this.endDate;
+        }
 
         this.timeEventEmitter = new EventEmitter();
         this.timeEventEmitter.defineEvents(['timeChange']);
@@ -66,14 +77,22 @@ class TimeSlider {
             .attr("y", 0)
             .attr("height", contextHeight);
 
-        // Brush handler. Get time-range startDate a brush and pass it to the charts.
-        // Could do snaping with https://gist.github.com/mbostock/6232620
+        if (this.triggerBrush) {
+            // console.log("trying to trigger");
+            // d3.select(brush).call(d3.event.target.move, [this.selectedStartDate, this.selectedEndDate].map(this.contextXScale));
+        }
+
     }
 
+    // Brush handler. Get time-range startDate a brush and pass it to the charts.
+    // Could do snaping with https://gist.github.com/mbostock/6232620
     onBrush(timeslider) {
         return function() {
             // Don't trigger on self change
-            if (d3.event.sourceEvent.type === "brush") return;
+            if (d3.event.sourceEvent.type === "brush") {
+                return;
+            }
+
             const that = timeslider;
 
             const d0 = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);

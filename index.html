@@ -394,7 +394,11 @@ redrawDelayCauses = (() => {
          let max_date = new Date(2017, 8, 30);
          const timesliderDiv = document.getElementById("timeslider");
 
-         const timeslider = new TimeSlider({startDate:min_date, endDate:max_date, containerDiv:timesliderDiv});
+         const timeslider = new TimeSlider({containerDiv:timesliderDiv,
+                                            startDate:min_date,
+                                            endDate:max_date,
+                                            selectedStartDate:new Date(2017, 7, 1),
+                                            selectedEndDate:new Date(2017, 7, 31)});
          timeslider.draw();
          const dataSrc = new DataSource(timeslider);
          const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
