@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>Flight Delays</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="sankey.css">
+        <style>
+            body,html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                font-family: sans-serif;
+                overflow-x: hidden;
+            }
+            #container {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+            .handle, .selection  {
+                fill: #Ab82ff;
+            }
+            #timeslider {
+                position: absolute;
+                background-color: #5d478b;
+                left: 0px;
+                bottom: 3px;
+                height: 50px;
+                width: 100%;
+            }
+            #map {
+                width: 50%;
+                height: calc(100% - 50px);
+                position: absolute;
+                left: 0px;
+                transition: left .8s;
+                z-index: 0;
+            }
+            /* #map.hidden { left: -100%; } */
+            #graphs {
+                width: 100%;
+                height: calc(100% - 50px);
+                padding: 1em;
+                background-color: #424242;
+                color: #cecece;
+                position: absolute;
+                left: 0px;
+                transition: left .8s;
+                z-index: 0;
+            }
+            #graphs.hidden { left: 50%; }
+            #graphs h2 {
+                padding-left: 3.14169em;
+                margin: 0;
+                margin-bottom: .5em;
+            }
+
+            #delay-causes, #sankey {
+                width: 49%;
+                height: 90%;
+            }
+
+            .btn-back, .btn-back:visited, .btn-back:active, .btn-back:hover {
+                color: #cecece;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 24px;
+                float: left;
+            }
+
+            path.link {
+                 cursor: pointer;
+            }
+
+            #map-labels {
+                padding: 10px;
+                position: absolute;
+                right: calc(50% + 10px);
+                top: 60px;
+                width: 100px;
+                background-color: #424242;
+                color: #cecece;
+                text-align: center;
+            }
+
+            #map-labels h3 {
+                margin: 0;
+                font-size: 14px;
+            }
+
+            #map-labels h3 sup {
+                font-size: 8px;
+            }
+
+            #map-labels table {
+                width: 100%;
+            }
+
+            #map-labels td {
+                font-size: 8px;
+            }
+
+            #map-labels .labels-delay td img {
+                height: 3.14159em;
+            }
+
+            #delay-scale { position: relative; }
+            #delay-scale img {
+                width: 100px;
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="map"></div>
+            <div id="map-labels">
+                <h3>Delays <br/><sup>(90%-ile)</sup></h3>
+                <table class="labels-delay">
+                    <tr> <td>&lt; 15 min</td> <td>&lt; 30 min</td> </tr>
+                    <tr> <td><img src="marker-none.svg" /></td> <td><img src="marker-low.svg" /></td> </tr>
+                    <tr> <td>&lt; 45 min</td> <td>&lt; 60 min</td> </tr>
+                    <tr> <td><img src="marker-medium.svg" /></td> <td><img src="marker-high.svg" /></td> </tr>
+                    <tr> <td>&gt; 60 min</td> <td></td> </tr>
+                    <tr> <td><img src="marker-extreme.svg" /></td> <td></td> </tr>
+                </table>
+
+                <h3>Traffic</h3>
+                <table>
+                    <tr> <td>&lt; 50 flights</td> <td>&lt; 100 flights</td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="5" /></td> <td><img src="marker-low.svg" width="10" /></td> </tr>
+                    <tr> <td>&lt; 200 flights</td> <td>&lt; 5000 flights</td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="15" /></td> <td><img src="marker-low.svg" width="20" /></td> </tr>
+                    <tr> <td>&gt; 5000 flights</td> <td></td> </tr>
+                    <tr> <td><img src="marker-low.svg" width="25" /></td> <td></td> </tr>
+                </table>
+            </div>
+            <div id="graphs" class="hidden">
+                <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
+                <h2 id="airport-name">Select an airport</h2>
+                <div id="delay-scale"> <img src="https://raw.githubusercontent.com/d3/d3-scale/master/img/magma.png" alt="Interpolate magma scale" /> </div>
+                <svg id="delay-causes" style="width: 50%"></svg>
+                <svg id="sankey"></svg>
+            </div>
+            <div id="timeslider"></div>
+        </div>
+
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/wolfy87-eventemitter@5.2.4/EventEmitter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.7.1/d3-sankey.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="timeslider.js"></script>
+        <script src="data_components.js"></script>
+        <script type="text/javascript" src="d3-sankey.js"></script>
+        <script type="text/javascript" src="sankey.js"></script>
+        <script>
+            // JS
+
+let min_date = new Date(2016, 0, 1);
+let max_date = new Date(2017, 8, 30);
+const timesliderDiv = document.getElementById("timeslider");
+
+const timeslider = new TimeSlider({containerDiv:timesliderDiv,
+    startDate:min_date,
+    endDate:max_date,
+    selectedStartDate:new Date(2016, 0, 1),
+    selectedEndDate:new Date(2017, 8, 31)});
+timeslider.draw();
+const dataSrc = new DataSource(timeslider);
+dataSrc.dataEventEmitter.addListener('airportChanged', () => {
+    currentAirport = dataSrc.airport;
+    updateViews();
+});
+const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
+
+let fetching = false
+let causesMonths = {}
+
+let globalData = null
+let currentAirport = null
+let baseLayer = new L.tileLayer('https://a.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    id: 'mapbox.world-dark',
+    maxZoom: 20,
+    attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'
+})
+
+let map = new L.map('map', {
+    center: new L.LatLng(37.8, -96),
+    zoom: 4,
+    layers: [baseLayer]
+})
+
+let shadowUrl = 'https://unpkg.com/leaflet@1.2.0/dist/images/marker-shadow.png';
+let delayCategories = ['none', 'low', 'medium', 'high', 'extreme']
+let trafficScales = [0.2, 0.4, 0.6, 0.8, 1]
+let trafficLimits = [50, 100, 200, 5000]
+let delayLimits = [15, 30, 45, 60]
+let deficon = new L.Icon.Default()
+let scale = (s, arr) => arr.map((x) => s * x)
+
+let icons = delayCategories.map((del, del_id) =>
+    trafficScales.map((traf, traf_id) =>
+        L.icon({
+            iconUrl: 'marker-' + del + '.svg',
+            shadowUrl: shadowUrl,
+
+            iconSize: scale(traf, deficon.options.iconSize),
+            shadowSize: scale(traf, deficon.options.shadowSize),
+            iconAnchor: scale(traf, deficon.options.iconAnchor),
+            //shadowAnchor: scale(traf, deficon.options.shadowAnchor),
+            popupAnchor: scale(traf, deficon.options.popupAnchor),
+        })
+    )
+)
+
+let airportsData = null;
+let airportsMarkers = {};
+let airportNames = {};
+d3.csv('airports-delay.csv', (data) => {
+    airportsData = data;
+    availableAirports = {}
+    filterMarkers().forEach((airport) => {
+        availableAirports[airport.Origin] = true;
+        let m = L.marker([airport.Lat, airport.Lng], {
+            title: airport.Origin,
+        }).addTo(map);
+
+        m.on('click', (event) => {
+            currentAirport = airport.Origin
+            dataSrc.setAirport(currentAirport)
+
+            toggleViews()
+        });
+        m.on('mouseover', (event) => {
+             currentAirport = airport.Origin
+             dataSrc.setAirport(currentAirport)
+
+             //toggleViews()
+        });
+
+        airportsMarkers[airport.Origin] = m;
+    });
+
+    d3.csv('L_AIRPORT.csv', (airports) => {
+        airports.forEach((airport) => {
+            const code = airport.Code;
+            if (availableAirports[code]) {
+                airportNames[code] = airport.Description.split(',')[0];
+            }
+        });
+        skey.setAirportNames(airportNames);
+    });
+
+    updateMarkers();
+})
+
+function filterMarkers() {
+    let start = timeslider.selectedStartDate,
+        end = timeslider.selectedEndDate
+
+    if (!airportsData) return []
+
+    let a2date = a => new Date(+a.Year, +a.Month - 1)
+    let data = airportsData.filter(a => start <= a2date(a) && a2date(a) <= end)
+    let dataByOrigin = groupByMarker(data, a => a.Origin)
+    let result = Object.keys(dataByOrigin)
+        .map(orig => { return {
+            Origin: orig,
+            DepDelayMinutes: d3.mean(dataByOrigin[orig], e => +e.DepDelayMinutes),
+            Flights: d3.mean(dataByOrigin[orig], e => +e.Flights),
+            Lat: d3.mean(dataByOrigin[orig], e => +e.Lat),
+            Lng: d3.mean(dataByOrigin[orig], e => +e.Lng),
+      }})
+
+    skey.setAirportsData(result)
+
+    return result
+}
+
+function updateMarkers() {
+    filterMarkers().forEach(airport =>
+        airportsMarkers[airport.Origin]
+          .setIcon(airportIcon(airport))
+    )
+}
+
+function groupByMarker(xs, key) {
+    return xs.reduce((acc, x) => {
+        (acc[key(x)] = acc[key(x)] || []).push(x)
+        return acc
+    }, {})
+}
+
+function airportIcon(airport) {
+    let traffic = 0
+    for (traffic = 0; traffic < trafficLimits.length; traffic++)
+        if (airport.Flights < trafficLimits[traffic])
+            break
+
+    let delay = 0
+    for (delay = 0; delay < delayLimits.length; delay++)
+        if (airport.DepDelayMinutes < delayLimits[delay])
+            break
+
+    return icons[delay][traffic]
+}
+
+function updateViews() {
+    document.getElementById('airport-name').textContent =
+        'Welcome to ' + airportNames[currentAirport] + " (" + currentAirport + ")";
+    redrawDelayCauses()
+}
+
+function toggleViews() {
+    document.getElementById('map').classList.toggle('hidden')
+    document.getElementById('graphs').classList.toggle('hidden')
+    toggleLabel(document.getElementById('btn-back'))
+}
+
+function toggleLabel(btn) {
+    btn.textContent = btn.textContent == ' ' ? '>' : ' '
+}
+
+
+
+
+redrawDelayCauses = (() => {
+    let svg = d3.select('svg#delay-causes')
+    let bounds = svg.node().getBoundingClientRect()
+    let innerMargin = 10
+    let margin = { top: 20, right: 10, bottom: 30, left: 75 }
+    let width = bounds.width - margin.left - margin.right
+    let height = bounds.height - margin.top - margin.bottom
+    let g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+    d3.select('#delay-scale img')
+      .style('top', 20 + 'px')
+      .style('left', margin.left + width - 100 + 'px')
+
+    xDomain = []
+    for (let i = 1; i <= 31; i++)
+        xDomain.push(i)
+    let x = d3.scaleBand()
+        .domain(xDomain)
+        .rangeRound([0, width])
+        .padding(0.05)
+        .align(0.1)
+
+    yDomain = ['Unknown', 'LateAircraft', 'Security', 'NAS', 'Weather', 'Carrier']
+    let y = d3.scaleBand()
+        .domain(yDomain)
+        .paddingOuter(0.01)
+        .paddingInner(0.05)
+        .align(0.1)
+
+    let z = d3.interpolateMagma
+
+    let yBar = d3.scaleLog()
+
+    /* TODO: add scales, process months, load stuffs */
+
+
+    // Build the graph
+    /*
+    let baseData = []
+    xDomain.forEach((day) =>
+        yDomain.forEach((cause) =>
+    */
+
+    return () => {
+        let data = globalData.filter((r) => r.Origin == currentAirport)
+        let keys = yDomain
+
+        let h = height - 1.11 * keys.length * x.bandwidth() - innerMargin
+
+        y.domain(keys)
+         .rangeRound([h + innerMargin, height])
+
+        yBar.domain([1, 500000])
+            .rangeRound([h, 0])
+            .nice()
+
+        formattedData = []
+        data.forEach((day) =>
+            keys.forEach((key) =>
+                formattedData.push({
+                    key: key,
+                    dom: day.DayofMonth,
+                    val: day[key + 'Delay'] / day.Total,
+                }) ) )
+
+        g.selectAll('g').remove()
+        g.append('g')
+            .selectAll('rect')
+            .data(formattedData)
+            .enter().append('rect')
+                .attr('class', 'cause')
+                .attr('x', (d) => x(d.dom))
+                .attr('y', (d) => y(d.key))
+                .attr('fill', (d) => z(d.val))
+                .attr('height', y.bandwidth())
+                .attr('width', x.bandwidth())
+
+        let barWidth = Math.floor(x.bandwidth() * 0.2)
+        g.append('g')
+         .attr('class', 'causes')
+         .attr('fill', 'black')
+            .selectAll('rect')
+            .data(data)
+            .enter().append('rect')
+                .attr('class', 'delay')
+                .attr('x', (d) => x(d.DayofMonth) + (x.bandwidth() - barWidth) / 2.0)
+                .attr('y', (d) => yBar(d.Total))
+                .attr('fill', '#cecece')
+                .attr('width', barWidth)
+                .attr('height', (d) => h - yBar(d.Total))
+
+        let xAxis = g.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x))
+
+        xAxis.selectAll('text').attr('fill', '#cecece')
+        xAxis.selectAll('line').attr('stroke', '#cecece')
+        xAxis.selectAll('path').attr('stroke', '#cecece')
+
+        xAxis.append('text')
+            .attr('y', 25)
+            .attr('x', x(15))
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Day of Month')
+
+        let yAxis = g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(y))
+
+        yAxis.selectAll('text').attr('fill', '#cecece')
+        yAxis.selectAll('line').attr('stroke', '#cecece')
+        yAxis.selectAll('path').attr('stroke', '#cecece')
+
+        let yBarAxis = g.append('g')
+            .attr('class', 'y axis')
+            .call(d3.axisLeft(yBar).ticks(null, '.0s'))
+
+        yBarAxis.selectAll('text').attr('fill', '#cecece')
+        yBarAxis.selectAll('line').attr('stroke', '#cecece')
+        yBarAxis.selectAll('path').attr('stroke', '#cecece')
+
+        yBarAxis.append('text')
+            .attr('x', 2)
+            .attr('y', yBar(yBar.ticks().pop()) + 0.5)
+            .attr('dy', '0.32em')
+            .attr('fill', '#cecece')
+            .attr('font-weight', 'bold')
+            .attr('text-anchor', 'start')
+            .text('Delay (min)')
+
+        let zScale = d3.scaleLinear().domain([0, 1]).range([0, 100])
+        let zAxis = g.append('g')
+            .attr('class', 'z axis')
+            .attr('transform', 'translate(' + (width - 100) + ',0)')
+            .call(d3.axisTop(zScale).ticks(2, '%'))
+
+        zAxis.selectAll('text').attr('fill', '#cecece')
+        zAxis.selectAll('line').attr('stroke', '#cecece')
+        zAxis.selectAll('path').attr('stroke', '#cecece')
+    }
+})()
+
+tickTimeChange()
+
+function sumDelays(a, b) {
+    a.Origin = b.Origin
+    a.DayofMonth =+ b.DayofMonth
+    a.CarrierDelay  +=+ b.CarrierDelay
+    a.WeatherDelay  +=+ b.WeatherDelay
+    a.NASDelay      +=+ b.NASDelay
+    a.SecurityDelay +=+ b.SecurityDelay
+    a.LateAircraftDelay +=+ b.LateAircraftDelay
+    a.UnknownDelay  +=+ b.UnknownDelay
+
+    return a
+}
+
+function groupByAirport(xs, key) {
+    return xs.reduce((acc, x) => {
+        acc[key(x)] = acc[key(x)] || { CarrierDelay: 0, WeatherDelay: 0, NASDelay: 0, SecurityDelay: 0, LateAircraftDelay: 0, UnknownDelay: 0 }
+        sumDelays(acc[key(x)], x)
+        return acc
+    }, {})
+}
+
+// Update markers
+timeslider.timeEventEmitter.addListener('timeChange', tickTimeChange)
+
+function tickTimeChange() {
+    updateMarkers()
+
+    if (fetching) return
+    fetching = true
+
+    let start = new Date(timeslider.selectedStartDate)
+    let end = new Date(timeslider.selectedEndDate)
+
+    let months = []
+    for (start; start < end; start.setMonth(start.getMonth() + 1))
+        months.push((1900 + start.getYear()) + '_' + (start.getMonth() + 1))
+
+    loadMonths(months)
+      .then(ms => [].concat.apply([], ms))
+      .then(ms => Object.values(groupByAirport(ms, (m) => m.Origin + '-' + m.DayofMonth)))
+      .then(data => {
+          data.forEach(d => {
+              let t = 0
+              yDomain.forEach(f => t += d[f + 'Delay'])
+              d.Total = t
+          })
+          globalData = data
+      })
+      .then(redrawDelayCauses)
+}
+
+function loadMonths(months) {
+    let ms = months
+      .filter((m) => !(m in causesMonths))
+
+    let ps = months
+      .filter((m) => !(m in causesMonths))
+      .map((m) => new Promise((resolve, reject) =>
+          d3.csv('delay-causes_' + m + '.csv', (error, data) => {
+              if (error) reject(error)
+              else resolve([m, data])
+          })))
+
+    return Promise.all(ps)
+      .catch(e => console.err(e))
+      .finally(() => fetching = false)
+      .then(ds =>
+          ds.forEach((d) => causesMonths[d[0]] = d[1]))
+      .then(() =>
+          months.map(m => causesMonths[m]))
+}
+        </script>
+    </body>
+</html>
