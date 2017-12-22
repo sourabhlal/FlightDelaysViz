@@ -81,25 +81,6 @@ class TimeSlider {
                   .attr("class", "x brush")
                   .call(brush);
 
-        // handles.selectAll("rect")
-        //     .attr("y", 0)
-        //     .attr("height", contextHeight);
-
-        // handles.selectAll(".handle--custom").select('rect')
-        //     .data([{type: "w"}, {type: "e"}])
-        //     .enter().append("path")
-        //     .attr("class", "handle--custom")
-        //     .attr("fill", "#666")
-        //     .attr("fill-opacity", 0.8)
-        //     .attr("stroke", "#000")
-        //     .attr("stroke-width", 1.5)
-        //     .attr("cursor", "ew-resize")
-        //     .attr("d", d3.arc()
-        //           .innerRadius(0)
-        //           .outerRadius(contextHeight / 2)
-        //           .startAngle(0)
-        //           .endAngle(function(d, i) { return i ? Math.PI : -Math.PI; }));
-
         if (this.triggerBrush) {
             // console.log("trying to trigger");
             // d3.select(brush).call(d3.event.target.move, [this.selectedStartDate, this.selectedEndDate].map(this.contextXScale));
