@@ -2,15 +2,19 @@
 
 ## Flight Delays
 
-**By Romain, Sourabh, Thierry**
+**By Romain, Sourabh and Thierry**
 
 ### Installation
+
+Try it [there](https://sourabhlal.github.io/FlightDelaysViz/)!
 
 There is no dependencies to install for seeing this visualisation.
 You just need to serve content of the directory using an HTTP server.
 To do so, you may simply type the following command:
 
     python2 -m SimpleHTTPServer
+
+You can use Google Chrome and reach the visualisation there http://localhost:8000.
 
 You can find the original dataset [here](https://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time).
 If you want to use our pipeline to process the data by yourself, you will need to download extra data through Git LFS.
