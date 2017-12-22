@@ -125,7 +125,7 @@ class SankeyDiagram {
 
                 return green2red(percentage);
             })
-            .style("stroke-width", function(d) { return Math.max(1, Math.abs(d.dy)); })
+            .style("stroke-width", function(d) { return Math.max(10, Math.abs(d.dy)); })
             .sort(function(a, b) { return b.dy - a.dy; })
             .append("title")
             .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
@@ -150,7 +150,7 @@ class SankeyDiagram {
 
                 return green2red(percentage);
             })
-            .style("stroke-width", function(d) { return Math.max(1, Math.abs(d.dy)); });
+            .style("stroke-width", function(d) { return Math.max(10, Math.abs(d.dy)); });
 
         const nd = node.data(graph.nodes, (n) => n.name + "," + n.x + "," + n.y);
         const g = nd.enter().append("g")
@@ -158,7 +158,7 @@ class SankeyDiagram {
                   .attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
         const rect = g.append("rect")
-            .attr("height", function(d) { return Math.max(1, Math.abs(d.dy)); })
+            .attr("height", function(d) { return Math.max(10, Math.abs(d.dy)); })
             .attr("width", this.sankey.nodeWidth())
             .attr("fill", function(d) { return that.airportColor(d.name); })
             .attr("stroke", function(d) { return that.airportColor(d.name); });
