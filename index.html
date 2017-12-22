@@ -154,6 +154,10 @@ const timeslider = new TimeSlider({containerDiv:timesliderDiv,
     selectedEndDate:new Date(2017, 8, 31)});
 timeslider.draw();
 const dataSrc = new DataSource(timeslider);
+         dataSrc.dataEventEmitter.addListener('airportChanged', () => {
+             currentAirport = dataSrc.airport;
+             updateViews();
+         });
 const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
 
 let fetching = false
@@ -209,7 +213,7 @@ d3.csv('airports-delay.csv', (data) => {
             currentAirport = airport.Origin
             dataSrc.setAirport(currentAirport)
 
-            updateViews()
+             /* updateViews()*/
             toggleViews()
         })
         m.on('mouseover', (event) => {
@@ -217,7 +221,7 @@ d3.csv('airports-delay.csv', (data) => {
              dataSrc.setAirport(currentAirport)
 
              //toggleViews()
-             updateViews()
+             /* updateViews()*/
         })
 
         airportsMarkers[airport.Origin] = m
@@ -292,6 +296,9 @@ function toggleViews() {
 function toggleLabel(btn) {
     btn.textContent = btn.textContent == ' ' ? '>' : ' '
 }
+
+
+
 
 redrawDelayCauses = (() => {
     let svg = d3.select('svg#delay-causes')

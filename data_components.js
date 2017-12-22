@@ -29,7 +29,7 @@ class DataSource {
         this.targetCity = null;
         // TODO Create these events
         this.dataEventEmitter = new EventEmitter();
-        this.dataEventEmitter.defineEvents(['sankeyDataAvailable', 'causesDataAvailable']);
+        this.dataEventEmitter.defineEvents(['sankeyDataAvailable', 'causesDataAvailable', 'airportChanged']);
 
         this.aggregationBy = null;
     }
@@ -37,7 +37,8 @@ class DataSource {
     __setAirport(dataSrc, newAirport) {
         dataSrc.airport = newAirport;
         dataSrc.airportTimer = null;
-        console.log("Setting airport to ", newAirport);
+
+        dataSrc.dataEventEmitter.emit('airportChanged');
 
         dataSrc.getSankey(newAirport);
     }
@@ -47,7 +48,7 @@ class DataSource {
             clearTimeout(this.airportTimer);
         }
 
-        this.airportTimer = setTimeout(this.__setAirport, 100, this, newAirport);
+        this.airportTimer = setTimeout(this.__setAirport, 10, this, newAirport);
     }
 
     handleAggregationChange() {
