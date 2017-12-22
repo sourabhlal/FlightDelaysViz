@@ -163,10 +163,17 @@ class SankeyDiagram {
             .attr("fill", function(d) { return that.airportColor(d.name); })
             .attr("stroke", function(d) { return that.airportColor(d.name); });
 
+        g.append("text")
+          .attr("x", this.sankey.nodeWidth() / 2)
+          .attr("y", function(d) { return d.dy / 2; })
+          .attr('fill', '#cecece')
+          .attr("dy", ".35em")
+          .attr("text-anchor", "middle")
+          .attr("transform", null)
+          .text(function(d) { return d.name; })
 
         node.exit().remove();
         nd.exit().remove();
-
         // g.transition().duration(2000)
         //     .select('text')
         //     .attr("x", -6)
