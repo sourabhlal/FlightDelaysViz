@@ -34,10 +34,20 @@ class DataSource {
         this.aggregationBy = null;
     }
 
-    airportChange(newAirport) {
-        this.airport = newAirport;
+    __setAirport(dataSrc, newAirport) {
+        dataSrc.airport = newAirport;
+        dataSrc.airportTimer = null;
+        console.log("Setting airport to ", newAirport);
 
-        this.getSankey(newAirport);
+        dataSrc.getSankey(newAirport);
+    }
+
+    setAirport(newAirport) {
+        if (this.airportTimer !== null) {
+            clearTimeout(this.airportTimer);
+        }
+
+        this.airportTimer = setTimeout(this.__setAirport, 100, this, newAirport);
     }
 
     handleAggregationChange() {

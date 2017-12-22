@@ -207,14 +207,14 @@ d3.csv('airports-delay.csv', (data) => {
 
         m.on('click', (event) => {
             currentAirport = airport.Origin
-            dataSrc.airportChange(currentAirport)
+            dataSrc.setAirport(currentAirport)
 
             updateViews()
             toggleViews()
         })
         m.on('mouseover', (event) => {
              currentAirport = airport.Origin
-             dataSrc.airportChange(currentAirport)
+             dataSrc.setAirport(currentAirport)
 
              //toggleViews()
              updateViews()

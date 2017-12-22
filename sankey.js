@@ -83,7 +83,7 @@ class SankeyDiagram {
         this.sankey
             .nodes(graph.nodes)
             .links(graph.links)
-            .layout(64);
+            .layout(1024);
 
         var path = this.sankey.link();
 
@@ -106,7 +106,21 @@ class SankeyDiagram {
         var maxDelay = getMaxDelay(graph.links, "value").value;
         var maxEarly = getMaxEarly(graph.links, "value").value;
 
+        const that = this;
+
+        function linkedAirport(lnk) {
+            let focusAirport = that.dataSrc.airport;
+            if (lnk.source.name === focusAirport) {
+                return lnk.target;
+            } else {
+                return lnk.source;
+            }
+        }
+
         lnk.enter().append("path")
+            .attr("id", function(d) {
+                return linkedAirport(d).name;
+            })
             .attr("class", function(d) {
                 return "link "+d.source.name+" "+d.target.name;
             })
@@ -132,6 +146,9 @@ class SankeyDiagram {
 
         lnk.exit().remove();
         lnk.transition().duration(2000)
+            .attr("id", function(d) {
+                return linkedAirport(d).name;
+            })
             .attr("class", function(d) {
                 return "link "+d.source.name+" "+d.target.name;
             })
@@ -223,6 +240,10 @@ class SankeyDiagram {
             return partners.filter(classSelector);
         };
 
+        links.click(function(e) {
+            that.dataSrc.setAirport(e.currentTarget.id);
+        });
+
         // add handlers for entering and exiting any of the links
         links.hover(function(){
             findPartner($(this)).addClass('highlight');
@@ -233,7 +254,7 @@ class SankeyDiagram {
         var searchCity = function(code){
           return partners.filter('.' + code)
         }
-          
+
         $( "#search" ).click(function() {
           searchCity( $( "#city" ).val() ).addClass('highlight');
         });
