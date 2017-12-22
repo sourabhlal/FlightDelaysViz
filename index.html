@@ -102,6 +102,12 @@
             #map-labels .labels-delay td img {
                 height: 3.14159em;
             }
+
+            #delay-scale { position: relative; }
+            #delay-scale img {
+                width: 100px;
+                position: absolute;
+            }
         </style>
     </head>
     <body>
@@ -131,6 +137,7 @@
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
                 <h2 id="airport-name">Select an airport</h2>
+                <div id="delay-scale"> <img src="https://raw.githubusercontent.com/d3/d3-scale/master/img/magma.png" alt="Interpolate magma scale" /> </div>
                 <svg id="delay-causes" style="width: 50%"></svg>
                 <svg id="sankey"></svg>
             </div>
@@ -328,6 +335,9 @@ redrawDelayCauses = (() => {
     let height = bounds.height - margin.top - margin.bottom
     let g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
+    d3.select('#delay-scale img')
+      .style('top', 20 + 'px')
+      .style('left', margin.left + width - 100 + 'px')
 
     xDomain = []
     for (let i = 1; i <= 31; i++)
@@ -449,6 +459,16 @@ redrawDelayCauses = (() => {
             .attr('font-weight', 'bold')
             .attr('text-anchor', 'start')
             .text('Delay (min)')
+
+        let zScale = d3.scaleLinear().domain([0, 1]).range([0, 100])
+        let zAxis = g.append('g')
+            .attr('class', 'z axis')
+            .attr('transform', 'translate(' + (width - 100) + ',0)')
+            .call(d3.axisTop(zScale).ticks(2, '%'))
+
+        zAxis.selectAll('text').attr('fill', '#cecece')
+        zAxis.selectAll('line').attr('stroke', '#cecece')
+        zAxis.selectAll('path').attr('stroke', '#cecece')
     }
 })()
 
