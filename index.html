@@ -19,6 +19,9 @@
                 width: 100%;
                 overflow: hidden;
             }
+            .handle, .selection  {
+                fill: #Ab82ff;
+            }
             #timeslider {
                 position: absolute;
                 background-color: #5d478b;
@@ -229,7 +232,6 @@ d3.csv('airports-delay.csv', (data) => {
             currentAirport = airport.Origin
             dataSrc.setAirport(currentAirport)
 
-             /* updateViews()*/
             toggleViews()
         });
         m.on('mouseover', (event) => {
@@ -237,7 +239,6 @@ d3.csv('airports-delay.csv', (data) => {
              dataSrc.setAirport(currentAirport)
 
              //toggleViews()
-             /* updateViews()*/
         });
 
         airportsMarkers[airport.Origin] = m;
