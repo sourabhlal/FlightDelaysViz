@@ -72,11 +72,21 @@ class TimeSlider {
 
     onBrush(timeslider) {
         return function() {
+            // Don't trigger on self change
+            if (d3.event.sourceEvent.type === "brush") return;
             const that = timeslider;
-            const b = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);
 
-            that.selectedStartDate = b[0];
-            that.selectedEndDate = b[1];
+            const d0 = d3.event.selection === null ? that.contextXScale.domain() : d3.event.selection.map(that.contextXScale.invert);
+            const d1 = d0.map(d3.timeMonth.round);
+
+            if (d1[0] >= d1[1]) {
+                d1[0] = d3.timeMonth.floor(d0[0]);
+                d1[1] = d3.timeMonth.offset(d1[0]);
+            }
+            d3.select(this).call(d3.event.target.move, d1.map(that.contextXScale));
+
+            that.selectedStartDate = d1[0];
+            that.selectedEndDate = d1[1];
 
             that.timeEventEmitter.emit("timeChange");
         };
