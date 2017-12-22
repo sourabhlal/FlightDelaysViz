@@ -2,7 +2,7 @@
 
 ## Flight Delays
 
-**By Romain, Sourabh and Thierry**
+**By Romain Gehrig, Sourabh Lal and Thierry Treyer**
 
 ### Installation
 
