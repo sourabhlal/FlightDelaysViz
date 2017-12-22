@@ -64,6 +64,10 @@ class SankeyDiagram {
             .attr("font-size", 10);
     }
 
+    setAirportNames(airportNames) {
+        this.airportNames = airportNames;
+    }
+
   airportColor(airport){
     let scale = d3.interpolateMagma
     let as = this.airportsData.filter(a => a.Origin == airport)
@@ -78,12 +82,11 @@ class SankeyDiagram {
     handleData() {
         this.data = this.dataSrc.sankeyData;
         const graph = this.data;
-        console.log('handle data for sankey for airport', this.dataSrc.airport);
 
         this.sankey
             .nodes(graph.nodes)
             .links(graph.links)
-            .layout(1024);
+            .layout(64);
 
         var path = this.sankey.link();
 
@@ -91,7 +94,7 @@ class SankeyDiagram {
         let link = this.link.selectAll("path");
         let node  = this.node.selectAll('g');
 
-      const that = this
+        const that = this;
         const lnk = link
                   .data(graph.links);
         // TODO: this is the declaration of the key function for each link (so we can do transitions) but for now it is messy and doesn't bring much visually.. We would need to look at with a better idea of what it should look like
@@ -105,8 +108,6 @@ class SankeyDiagram {
                         // });
         var maxDelay = getMaxDelay(graph.links, "value").value;
         var maxEarly = getMaxEarly(graph.links, "value").value;
-
-        const that = this;
 
         function linkedAirport(lnk) {
             let focusAirport = that.dataSrc.airport;
@@ -142,7 +143,7 @@ class SankeyDiagram {
             .style("stroke-width", function(d) { return Math.max(10, Math.abs(d.dy)); })
             .sort(function(a, b) { return b.dy - a.dy; })
             .append("title")
-            .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
+            .text( (d) => this.airportNames[d.source.name] + " → " + this.airportNames[d.target.name] + "\n" + format(d.value));
 
         lnk.exit().remove();
         lnk.transition().duration(2000)
@@ -167,7 +168,9 @@ class SankeyDiagram {
 
                 return green2red(percentage);
             })
-            .style("stroke-width", function(d) { return Math.max(10, Math.abs(d.dy)); });
+            .style("stroke-width", function(d) { return Math.max(10, Math.abs(d.dy)); })
+            .select('title')
+            .text( (d) => this.airportNames[d.source.name] + " → " + this.airportNames[d.target.name] + "\n" + format(d.value));
 
         const nd = node.data(graph.nodes, (n) => n.name + "," + n.x + "," + n.y);
         const g = nd.enter().append("g")
@@ -178,7 +181,7 @@ class SankeyDiagram {
             .attr("height", function(d) { return Math.max(10, Math.abs(d.dy)); })
             .attr("width", this.sankey.nodeWidth())
             .attr("fill", function(d) { return that.airportColor(d.name); })
-            .attr("stroke", function(d) { return that.airportColor(d.name); });
+                  .attr("stroke", function(d) { return that.airportColor(d.name); });
 
         g.append("text")
           .attr("x", this.sankey.nodeWidth() / 2)
@@ -187,7 +190,7 @@ class SankeyDiagram {
           .attr("dy", ".35em")
           .attr("text-anchor", "middle")
           .attr("transform", null)
-          .text(function(d) { return d.name; })
+          .text(function(d) { return d.name; });
 
         node.exit().remove();
         nd.exit().remove();
@@ -227,6 +230,7 @@ class SankeyDiagram {
         var links = $('path.'+linkClass);
         var partners = $('path.'+linkClass);
 
+
         // a function that finds a partner for a given a link
         var findPartner = function(link){
 
@@ -240,8 +244,10 @@ class SankeyDiagram {
             return partners.filter(classSelector);
         };
 
-        links.click(function(e) {
-            that.dataSrc.setAirport(e.currentTarget.id);
+        $('node').click((e) => this.dataSrc.setAirport(e.currentTarget.id));
+
+        links.click((e) => {
+            this.dataSrc.setAirport(e.currentTarget.id);
         });
 
         // add handlers for entering and exiting any of the links

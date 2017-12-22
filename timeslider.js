@@ -34,25 +34,27 @@ class TimeSlider {
                   .attr("height", (height));
 
         this.xScale = d3.scaleTime()
-                .range([0, width])
-                .domain([startDate, endDate]);
+            .range([0, width])
+            .domain([startDate, endDate]);
 
         // Create a context for a brush
         this.contextXScale = d3.scaleTime()
-                .range([0, contextWidth])
-                .domain(this.xScale.domain());
+            .range([0, contextWidth])
+            .domain(this.xScale.domain());
 
         this.contextAxis = d3.axisBottom(this.contextXScale)
-                .tickSize(contextHeight)
-                .tickPadding(-10);
+            .tickSize(contextHeight)
+            .ticks(d3.timeMonth)
+            .tickPadding(-15)
+            .tickFormat(d3.timeFormat("%B %Y"));
 
         this.contextArea = d3.area()
-                .x(function(d) {
-                    return this.contextXScale(d.date);
-                })
-                .y0(contextHeight)
-                .y1(0)
-                .curve(d3.curveLinear);
+            .x(function(d) {
+                return this.contextXScale(d.date);
+            })
+            .y0(contextHeight)
+            .y1(0)
+            .curve(d3.curveLinear);
 
         var brush = d3.brushX()
                 .extent([
@@ -71,16 +73,32 @@ class TimeSlider {
             .call(this.contextAxis);
 
         xAxis.selectAll('text').attr('fill', '#cecece')
-          .attr('font-weight', 'bold')
-        xAxis.selectAll('line').attr('stroke', '#cecece')
-        xAxis.selectAll('path').attr('stroke', '#cecece')
+            .attr('font-weight', 'bold');
+        xAxis.selectAll('line').attr('stroke', '#cecece');
+        xAxis.selectAll('path').attr('stroke', '#cecece');
 
-        context.append("g")
-            .attr("class", "x brush")
-            .call(brush)
-            .selectAll("rect")
-            .attr("y", 0)
-            .attr("height", contextHeight);
+        const handles = context.append("g")
+                  .attr("class", "x brush")
+                  .call(brush);
+
+        // handles.selectAll("rect")
+        //     .attr("y", 0)
+        //     .attr("height", contextHeight);
+
+        // handles.selectAll(".handle--custom").select('rect')
+        //     .data([{type: "w"}, {type: "e"}])
+        //     .enter().append("path")
+        //     .attr("class", "handle--custom")
+        //     .attr("fill", "#666")
+        //     .attr("fill-opacity", 0.8)
+        //     .attr("stroke", "#000")
+        //     .attr("stroke-width", 1.5)
+        //     .attr("cursor", "ew-resize")
+        //     .attr("d", d3.arc()
+        //           .innerRadius(0)
+        //           .outerRadius(contextHeight / 2)
+        //           .startAngle(0)
+        //           .endAngle(function(d, i) { return i ? Math.PI : -Math.PI; }));
 
         if (this.triggerBrush) {
             // console.log("trying to trigger");

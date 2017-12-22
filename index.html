@@ -20,10 +20,12 @@
                 overflow: hidden;
             }
             #timeslider {
+                position: absolute;
                 background-color: #5d478b;
                 left: 0px;
-                top: 0px;
+                bottom: 3px;
                 height: 50px;
+                width: 100%;
             }
             #map {
                 width: 50%;
@@ -104,7 +106,6 @@
     </head>
     <body>
         <div id="container">
-            <div id="timeslider"></div>
             <div id="map"></div>
             <div id="map-labels">
                 <h3>Delays <br/><sup>(90%-ile)</sup></h3>
@@ -133,6 +134,7 @@
                 <svg id="delay-causes" style="width: 50%"></svg>
                 <svg id="sankey"></svg>
             </div>
+            <div id="timeslider"></div>
         </div>
 
         <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -204,14 +206,17 @@ let icons = delayCategories.map((del, del_id) =>
     )
 )
 
-let airportsData = null
-let airportsMarkers = {}
+let airportsData = null;
+let airportsMarkers = {};
+let airportNames = {};
 d3.csv('airports-delay.csv', (data) => {
-    airportsData = data
+    airportsData = data;
+    availableAirports = {}
     filterMarkers().forEach((airport) => {
+        availableAirports[airport.Origin] = true;
         let m = L.marker([airport.Lat, airport.Lng], {
             title: airport.Origin,
-        }).addTo(map)
+        }).addTo(map);
 
         m.on('click', (event) => {
             currentAirport = airport.Origin
@@ -219,19 +224,29 @@ d3.csv('airports-delay.csv', (data) => {
 
              /* updateViews()*/
             toggleViews()
-        })
+        });
         m.on('mouseover', (event) => {
              currentAirport = airport.Origin
              dataSrc.setAirport(currentAirport)
 
              //toggleViews()
              /* updateViews()*/
-        })
+        });
 
-        airportsMarkers[airport.Origin] = m
-    })
+        airportsMarkers[airport.Origin] = m;
+    });
 
-    updateMarkers()
+    d3.csv('L_AIRPORT.csv', (airports) => {
+        airports.forEach((airport) => {
+            const code = airport.Code;
+            if (availableAirports[code]) {
+                airportNames[code] = airport.Description.split(',')[0];
+            }
+        });
+        skey.setAirportNames(airportNames);
+    });
+
+    updateMarkers();
 })
 
 function filterMarkers() {
@@ -287,7 +302,7 @@ function airportIcon(airport) {
 
 function updateViews() {
     document.getElementById('airport-name').textContent =
-        'Welcome to ' + currentAirport
+        'Welcome to ' + airportNames[currentAirport] + " (" + currentAirport + ")";
     redrawDelayCauses()
 }
 
