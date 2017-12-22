@@ -50,7 +50,6 @@
                 padding-left: 3.14169em;
                 margin: 0;
                 margin-bottom: .5em;
-                display: inline-block;
             }
 
             #delay-causes, #sankey {
@@ -82,8 +81,8 @@
                 font-size: 14px;
             }
 
-            #map-labels h3 span {
-                font-size: 10px;
+            #map-labels h3 sup {
+                font-size: 8px;
             }
 
             #map-labels table {
@@ -97,12 +96,6 @@
             #map-labels .labels-delay td img {
                 height: 3.14159em;
             }
-
-            input#city {
-                width: 14em;
-                float: right;
-                margin-right: calc(25% - 7em);
-            }
         </style>
     </head>
     <body>
@@ -110,7 +103,7 @@
             <div id="timeslider"></div>
             <div id="map"></div>
             <div id="map-labels">
-                <h3>Delays <span>(90%-ile)<span></h3>
+                <h3>Delays <br/><sup>(90%-ile)</sup></h3>
                 <table class="labels-delay">
                     <tr> <td>&lt; 15 min</td> <td>&lt; 30 min</td> </tr>
                     <tr> <td><img src="marker-none.svg" /></td> <td><img src="marker-low.svg" /></td> </tr>
@@ -133,7 +126,6 @@
             <div id="graphs" class="hidden">
                 <a href="#" onclick="toggleViews()" class="btn-back" id="btn-back">&nbsp;</a>
                 <h2 id="airport-name">Select an airport</h2>
-                <input type="text" class="form-control" name="search" id="city" placeholder="Search for a connection" />
                 <svg id="delay-causes" style="width: 50%"></svg>
                 <svg id="sankey"></svg>
             </div>
