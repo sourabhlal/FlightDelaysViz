@@ -104,10 +104,19 @@ class TimeSlider {
             }
             d3.select(this).call(d3.event.target.move, d1.map(that.contextXScale));
 
-            that.selectedStartDate = d1[0];
-            that.selectedEndDate = d1[1];
+            let shouldEmit = false;
+            if (that.selectedStartDate.getTime() != d1[0].getTime()) {
+              that.selectedStartDate = d1[0];
+              shouldEmit = true;
+            }
+            if (that.selectedEndDate.getTime() != d1[1].getTime()) {
+              that.selectedEndDate = d1[1];
+              shouldEmit = true;
+            }
 
-            that.timeEventEmitter.emit("timeChange");
+            if (shouldEmit) {
+              that.timeEventEmitter.emit("timeChange");
+            }
         };
     }
 }
