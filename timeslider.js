@@ -65,10 +65,15 @@ class TimeSlider {
                 .attr("class", "context")
                 .attr("transform", "translate(0,0)");
 
-        context.append("g")
+        let xAxis = context.append("g")
             .attr("class", "x axis top")
             .attr("transform", "translate(0,0)")
             .call(this.contextAxis);
+
+        xAxis.selectAll('text').attr('fill', '#cecece')
+          .attr('font-weight', 'bold')
+        xAxis.selectAll('line').attr('stroke', '#cecece')
+        xAxis.selectAll('path').attr('stroke', '#cecece')
 
         context.append("g")
             .attr("class", "x brush")
