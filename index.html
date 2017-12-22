@@ -235,7 +235,7 @@ function filterMarkers() {
     let a2date = a => new Date(+a.Year, +a.Month - 1)
     let data = airportsData.filter(a => start <= a2date(a) && a2date(a) <= end)
     let dataByOrigin = groupByMarker(data, a => a.Origin)
-    return Object.keys(dataByOrigin)
+    let result = Object.keys(dataByOrigin)
         .map(orig => { return {
             Origin: orig,
             DepDelayMinutes: d3.mean(dataByOrigin[orig], e => +e.DepDelayMinutes),
@@ -243,6 +243,10 @@ function filterMarkers() {
             Lat: d3.mean(dataByOrigin[orig], e => +e.Lat),
             Lng: d3.mean(dataByOrigin[orig], e => +e.Lng),
       }})
+
+    skey.setAirportsData(result)
+
+    return result
 }
 
 function updateMarkers() {
@@ -317,7 +321,7 @@ redrawDelayCauses = (() => {
 
     let z = d3.interpolateMagma
 
-    let yBar = d3.scaleLinear()
+    let yBar = d3.scaleLog()
 
     /* TODO: add scales, process months, load stuffs */
 
@@ -335,16 +339,10 @@ redrawDelayCauses = (() => {
 
         let h = height - 1.11 * keys.length * x.bandwidth() - innerMargin
 
-        data.forEach(d => {
-            let t = 0
-            yDomain.forEach(f => t += d[f + 'Delay'])
-            d.Total = t
-        })
-
         y.domain(keys)
          .rangeRound([h + innerMargin, height])
 
-        yBar.domain([0, d3.max(data, (d) => d.Total)])
+        yBar.domain([1, 500000])
             .rangeRound([h, 0])
             .nice()
 
@@ -411,7 +409,7 @@ redrawDelayCauses = (() => {
 
         let yBarAxis = g.append('g')
             .attr('class', 'y axis')
-            .call(d3.axisLeft(yBar).ticks(null, 's'))
+            .call(d3.axisLeft(yBar).ticks(null, '.0s'))
 
         yBarAxis.selectAll('text').attr('fill', '#cecece')
         yBarAxis.selectAll('line').attr('stroke', '#cecece')
@@ -470,7 +468,14 @@ function tickTimeChange() {
     loadMonths(months)
       .then(ms => [].concat.apply([], ms))
       .then(ms => Object.values(groupByAirport(ms, (m) => m.Origin + '-' + m.DayofMonth)))
-      .then(data => globalData = data)
+      .then(data => {
+          data.forEach(d => {
+              let t = 0
+              yDomain.forEach(f => t += d[f + 'Delay'])
+              d.Total = t
+          })
+          globalData = data
+      })
       .then(redrawDelayCauses)
 }
 

@@ -32,13 +32,6 @@ function getMaxEarly(arr, prop) {
     return max;
 }
 
-function airportColor(airport){
-  // console.log("choose colour based on volume of flights from this airport");
-  if (airport.charAt(0) == "S"){
-    return "#0000FF";
-  }
-  return "#000";
-}
 
 var formatNumber = d3.format(",.0f");
 var format = function(d) { return formatNumber(d) + " mins"; };
@@ -54,6 +47,7 @@ class SankeyDiagram {
         this.dataSrc = dataSrc;
         dataSrc.dataEventEmitter.addListener('sankeyDataAvailable', () => this.handleData());
         this.data = null;
+        this.airportsData = null;
         this.svg = d3.select(container);
         this.width = container.clientWidth;
         this.height = container.clientHeight;
@@ -69,6 +63,17 @@ class SankeyDiagram {
             .attr("font-family", "sans-serif")
             .attr("font-size", 10);
     }
+
+  airportColor(airport){
+    let scale = d3.interpolateMagma
+    let as = this.airportsData.filter(a => a.Origin == airport)
+
+    return scale(d3.min([as[0].DepDelayMinutes / d3.max(this.airportsData, a => a.DepDelayMinutes), 1.0]))
+  }
+
+  setAirportsData(na) {
+    this.airportsData = na
+  }
 
     handleData() {
         this.data = this.dataSrc.sankeyData;
@@ -86,6 +91,7 @@ class SankeyDiagram {
         let link = this.link.selectAll("path");
         let node  = this.node.selectAll('g');
 
+      const that = this
         const lnk = link
                   .data(graph.links);
         // TODO: this is the declaration of the key function for each link (so we can do transitions) but for now it is messy and doesn't bring much visually.. We would need to look at with a better idea of what it should look like
@@ -154,8 +160,8 @@ class SankeyDiagram {
         const rect = g.append("rect")
             .attr("height", function(d) { return Math.max(1, Math.abs(d.dy)); })
             .attr("width", this.sankey.nodeWidth())
-            .attr("fill", function(d) { return airportColor(d.name); })
-            .attr("stroke", "#000");
+            .attr("fill", function(d) { return that.airportColor(d.name); })
+            .attr("stroke", function(d) { return that.airportColor(d.name); });
 
 
         node.exit().remove();
