@@ -158,10 +158,10 @@ const timeslider = new TimeSlider({containerDiv:timesliderDiv,
     selectedEndDate:new Date(2017, 8, 31)});
 timeslider.draw();
 const dataSrc = new DataSource(timeslider);
-         dataSrc.dataEventEmitter.addListener('airportChanged', () => {
-             currentAirport = dataSrc.airport;
-             updateViews();
-         });
+dataSrc.dataEventEmitter.addListener('airportChanged', () => {
+    currentAirport = dataSrc.airport;
+    updateViews();
+});
 const skey = new SankeyDiagram(dataSrc, document.getElementById("sankey"));
 
 let fetching = false

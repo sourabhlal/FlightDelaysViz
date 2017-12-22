@@ -77,8 +77,8 @@ class SankeyDiagram {
 
     handleData() {
         this.data = this.dataSrc.sankeyData;
-        const centerCity = this.dataSrc.targetCity;
         const graph = this.data;
+        console.log('handle data for sankey for airport', this.dataSrc.airport);
 
         this.sankey
             .nodes(graph.nodes)

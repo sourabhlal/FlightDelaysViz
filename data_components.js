@@ -1,23 +1,4 @@
 
-
-function getJson(filename, target) {
-    d3.json(filename, (json) => {
-        target.data = json;
-        target.data.links.forEach((l) => {
-            l.source = +l.source;
-            l.target = +l.target;
-            l.value = +l.value;
-        });
-        target.ready = true;
-        console.log('Loaded', filename);});
-}
-
-// TODO Test data: remove
-const data1 = {data: null, ready: false, targetCity: 'JFK'};
-const data2 = {data: null, ready: false, targetCity: "SFO"};
-getJson("sankey/data_JFK.json", data1);
-getJson("sankey/data_SFO.json", data2);
-
 class DataSource {
     constructor(timeComponent) {
         this.timeComponent = timeComponent;
@@ -26,12 +7,14 @@ class DataSource {
         this.endDate = this.timeComponent.endDate;
 
         this.sankeyData = {};
+        this.sankeyDataFull = {};
         this.targetCity = null;
         // TODO Create these events
         this.dataEventEmitter = new EventEmitter();
         this.dataEventEmitter.defineEvents(['sankeyDataAvailable', 'causesDataAvailable', 'airportChanged']);
 
         this.aggregationBy = null;
+        this.retrieveData(this.startDate, this.endDate, undefined);
     }
 
     __setAirport(dataSrc, newAirport) {
@@ -48,7 +31,7 @@ class DataSource {
             clearTimeout(this.airportTimer);
         }
 
-        this.airportTimer = setTimeout(this.__setAirport, 10, this, newAirport);
+        this.airportTimer = setTimeout(() => this.__setAirport(this, newAirport), 10);
     }
 
     handleAggregationChange() {
@@ -63,28 +46,33 @@ class DataSource {
     }
 
     getSankey(airport) {
-        const jsonFile = "sankey/data_" + airport + ".json";
-        d3.json(jsonFile, (json) => {
-            this.sankeyData = json;
-            this.sankeyData.links.forEach((l) => {
-                l.source = +l.source;
-                l.target = +l.target;
-                l.value = +l.value;
-            });
-
-            this.dataEventEmitter.emit('sankeyDataAvailable');
-        });
+        this.sankeyData = this.sankeyDataFull[airport];
+        this.dataEventEmitter.emit('sankeyDataAvailable');
     }
 
     retrieveData(from, to, aggregation) {
-        if (from.getFullYear() < 2008) {
-            this.sankeyData = data1.data;
-            this.targetCity = data1.targetCity;
-        } else {
-            this.sankeyData = data2.data;
-            this.targetCity = data2.targetCity;
+        // TODO Aggregation of sankey data
+        let month = from.getMonth() + 1;
+        let monthStr = "";
+        if (month < 10) {
+            monthStr += "0";
         }
+        monthStr += month;
 
-        this.dataEventEmitter.emit('sankeyDataAvailable');
+        const jsonFile = "sankey_data/data_" + from.getFullYear() + "_" + monthStr + ".json";
+
+        d3.json(jsonFile, (js) => {
+            this.sankeyDataFull = js;
+            for (let airport in js) {
+                js[airport].links.forEach((l) => {
+                    l.source = +l.source;
+                    l.target = +l.target;
+                    l.value = +l.value;
+                });
+
+            }
+            this.sankeyData = this.sankeyDataFull[this.airport];
+            this.dataEventEmitter.emit('sankeyDataAvailable');
+        });
     }
 }
